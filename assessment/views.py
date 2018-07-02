@@ -20,6 +20,9 @@ class ApplicationList(ListView):
     def get_context_data(self, **kwargs):
         context = super(ApplicationList, self).get_context_data(**kwargs)
         context['assessing_list'] = Application.objects.filter(assess_status='A')
+        context['security_list'] = Application.objects.filter(assess_status='A', security_decision='S')
+        context['privacy_list'] = Application.objects.filter(assess_status='A', privacy_decision='S')
+        context['owner_list'] = Application.objects.filter(assess_status='A', owner_decision='S', business_owner=self.request.user.id)#, privacy_decision='A' or 'R', security_decision='A' or 'R')
         context['rejected_list'] = Application.objects.filter(assess_status='R')
         context['accepted_list'] = Application.objects.filter(assess_status='P')
         context['new_list'] = Application.objects.filter(assess_status='N')
