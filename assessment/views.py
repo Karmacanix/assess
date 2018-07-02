@@ -1,5 +1,6 @@
 # django
 from django.contrib import messages
+from django.contrib.auth.models import User, Group
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
@@ -9,38 +10,23 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 
 # this app
-from .models import Application, InformationClassification, CloudQuestionnaire, CloudICTBriefCloudRiskAssessment #, PrivacyAssessment, NonFunctionals
-from .forms import ApplicationForm, InformationClassificationForm, CloudQuestionnaireForm, CloudICTBriefCloudRiskAssessmentForm #, PrivacyAssessmentForm, NonFunctionalsForm
+from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment #, PrivacyAssessment, NonFunctionals
+from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm, ApplicationPrivacyDecisionForm, ApplicationOwnerDecisionForm, InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm #, PrivacyAssessmentForm, NonFunctionalsForm
 
 # Create your views here.
 class ApplicationList(ListView):
     model = Application
 
+    def get_context_data(self, **kwargs):
+        context = super(ApplicationList, self).get_context_data(**kwargs)
+        context['assessing_list'] = Application.objects.filter(assess_status='A')
+        context['rejected_list'] = Application.objects.filter(assess_status='R')
+        context['accepted_list'] = Application.objects.filter(assess_status='P')
+        context['new_list'] = Application.objects.filter(assess_status='N')
+        return context
 
 class ApplicationDetail(DetailView):
     model = Application
-        
-
-    # def information_classification_exists(self, **kwargs):
-    #     try:
-    #         info_class=InformationClassification.objects.get(id=self.kwargs['pk'])
-    #         return True
-    #     except ObjectDoesNotExist:
-    #         return False
-
-    # def privacy_assessment_exists(self, **kwargs):
-    #     try:
-    #         info_class=PrivacyAssessment.objects.get(id=self.kwargs['pk'])
-    #         return True
-    #     except ObjectDoesNotExist:
-    #         return False
-
-    # def non_functional_assessment_exists(self, **kwargs):
-    #     try:
-    #         info_class=NonFunctionals.objects.get(id=self.kwargs['pk'])
-    #         return True
-    #     except ObjectDoesNotExist:
-    #         return False
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationDetail, self).get_context_data(**kwargs)
@@ -55,13 +41,105 @@ class ApplicationDetail(DetailView):
         else:
             context['cl'] = False
         
-        if hasattr(a, 'cloudictbriefcloudriskassessment'):
+        if hasattr(a, 'ictriskassessment'):
             context['bc'] = True
         else:
             context['bc'] = False
-        # context['pa'] = ApplicationDetail.privacy_assessment_exists(self)
-        # context['nf'] = ApplicationDetail.non_functional_assessment_exists(self)
+        
         return context
+
+
+class ApplicationSecurityAssess(SuccessMessageMixin, UpdateView):
+    model = Application
+    form_class = ApplicationSecurityDecisionForm
+    template_name = "assessment/application_assess.html"
+    success_message = 'Application ICT security assessment decision successfully updated!'
+
+    def get_context_data(self, **kwargs):
+        context = super(ApplicationSecurityAssess, self).get_context_data(**kwargs)
+        a = Application.objects.get(pk=self.kwargs['pk'])
+        
+        if hasattr(a, 'informationclassification'):
+            context['ic'] = True
+        else:
+            context['ic'] = False
+
+        if hasattr(a, 'cloudquestionnaire'):
+            context['cl'] = True
+        else:
+            context['cl'] = False
+        
+        if hasattr(a, 'ictriskassessment'):
+            context['bc'] = True
+        else:
+            context['bc'] = False
+        
+        return context
+
+    def get_success_url(self):
+        return reverse('assessment:application-list')
+
+
+class ApplicationPrivacyAssess(SuccessMessageMixin, UpdateView):
+    model = Application
+    form_class = ApplicationPrivacyDecisionForm
+    template_name = "assessment/application_assess.html"
+    success_message = 'Application privacy assessment decision successfully updated!'
+
+    def get_context_data(self, **kwargs):
+        context = super(ApplicationPrivacyAssess, self).get_context_data(**kwargs)
+        a = Application.objects.get(pk=self.kwargs['pk'])
+        
+        if hasattr(a, 'informationclassification'):
+            context['ic'] = True
+        else:
+            context['ic'] = False
+
+        if hasattr(a, 'cloudquestionnaire'):
+            context['cl'] = True
+        else:
+            context['cl'] = False
+        
+        if hasattr(a, 'ictriskassessment'):
+            context['bc'] = True
+        else:
+            context['bc'] = False
+        
+        return context
+
+    def get_success_url(self):
+        return reverse('assessment:application-list')
+
+
+class ApplicationOwnerAssess(SuccessMessageMixin, UpdateView):
+    model = Application
+    form_class = ApplicationOwnerDecisionForm
+    template_name = "assessment/application_assess.html"
+    success_message = 'Application business owner assessment decision successfully updated!'
+
+    def get_context_data(self, **kwargs):
+        context = super(ApplicationOwnerAssess, self).get_context_data(**kwargs)
+        a = Application.objects.get(pk=self.kwargs['pk'])
+        
+        if hasattr(a, 'informationclassification'):
+            context['ic'] = True
+        else:
+            context['ic'] = False
+
+        if hasattr(a, 'cloudquestionnaire'):
+            context['cl'] = True
+        else:
+            context['cl'] = False
+        
+        if hasattr(a, 'ictriskassessment'):
+            context['bc'] = True
+        else:
+            context['bc'] = False
+        
+        return context
+
+    def get_success_url(self):
+        return reverse('assessment:application-list')
 
 
 class ApplicationCreate(SuccessMessageMixin, CreateView):
@@ -82,6 +160,18 @@ class ApplicationUpdate(SuccessMessageMixin, UpdateView):
     success_message = 'Application details successfully updated!'
 
 
+class ApplicationSubmit(SuccessMessageMixin, UpdateView):
+    model = Application
+    form_class = ApplicationSubmitForm
+    template_name="assessment/application_confirm_submit.html"
+    success_message = 'Application submitted successfully for assessment!'
+
+    def get_initial(self):
+        initial = super(ApplicationSubmit, self).get_initial()
+        initial['assess_status'] = 'A'
+        return initial
+
+
 class ApplicationDelete(SuccessMessageMixin, DeleteView):
     model = Application
     success_url = reverse_lazy('assessment:application-list')
@@ -97,12 +187,6 @@ class InformationClassificationCreate(SuccessMessageMixin, CreateView):
     form_class = InformationClassificationForm
     success_message = 'Information Classification successfully saved!'
     success_url = reverse_lazy('assessment:application-list')
-
-    # def post(self, request, *args, **kwargs):
-    #     app = Application.objects.get(id=self.kwargs['pk'])
-    #     info_class = InformationClassification(application_ptr_id=app.id)
-    #     info_class.__dict__.update(app.__dict__)
-    #     info_class.save()
 
     def get_initial(self):
         initial = super(InformationClassificationCreate, self).get_initial()
@@ -135,12 +219,6 @@ class CloudQuestionnaireCreate(SuccessMessageMixin, CreateView):
     success_message = 'Cloud Questionnaire successfully saved!'
     success_url = reverse_lazy('assessment:application-list')
 
-    # def post(self, request, *args, **kwargs):
-    #     app = Application.objects.get(id=self.kwargs['pk'])
-    #     info_class = InformationClassification(application_ptr_id=app.id)
-    #     info_class.__dict__.update(app.__dict__)
-    #     info_class.save()
-
     def get_initial(self):
         initial = super(CloudQuestionnaireCreate, self).get_initial()
         initial['app'] = self.kwargs['pk']
@@ -162,35 +240,35 @@ class CloudQuestionnaireDelete(SuccessMessageMixin, DeleteView):
     success_message = "Cloud Questionnaire deleted!"
 
 
-class CloudICTBriefCloudRiskAssessmentDetail(DetailView):
-    model = CloudICTBriefCloudRiskAssessment
+class ICTRiskAssessmentDetail(DetailView):
+    model = ICTRiskAssessment
 
 
-class CloudICTBriefCloudRiskAssessmentCreate(SuccessMessageMixin, CreateView):
-    model = CloudICTBriefCloudRiskAssessment
-    form_class = CloudICTBriefCloudRiskAssessmentForm
-    success_message = 'ICT Brief Cloud Risk Assessment successfully saved!'
+class ICTRiskAssessmentCreate(SuccessMessageMixin, CreateView):
+    model = ICTRiskAssessment
+    form_class = ICTRiskAssessmentForm
+    success_message = 'ICT Risk Assessment successfully saved!'
     success_url = reverse_lazy('assessment:application-list')
 
     def get_initial(self):
-        initial = super(CloudICTBriefCloudRiskAssessmentCreate, self).get_initial()
+        initial = super(ICTRiskAssessmentCreate, self).get_initial()
         initial['app'] = self.kwargs['pk']
         return initial
 
 
-class CloudICTBriefCloudRiskAssessmentUpdate(SuccessMessageMixin, UpdateView):
-    model = CloudICTBriefCloudRiskAssessment
-    form_class = CloudICTBriefCloudRiskAssessmentForm
-    success_message = 'ICT Brief Cloud Risk Assessment successfully updated!'
+class ICTRiskAssessmentUpdate(SuccessMessageMixin, UpdateView):
+    model = ICTRiskAssessment
+    form_class = ICTRiskAssessmentForm
+    success_message = 'ICT Risk Assessment successfully updated!'
 
     def get_success_url(self):
-        return reverse('assessment:cloudictbriefcloudriskassessment-detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse('assessment:ictriskassessment-detail', kwargs={'pk': self.kwargs['pk']})
 
 
-class CloudICTBriefCloudRiskAssessmentDelete(SuccessMessageMixin, DeleteView):
-    model = CloudICTBriefCloudRiskAssessment
+class ICTRiskAssessmentDelete(SuccessMessageMixin, DeleteView):
+    model = ICTRiskAssessment
     success_url = reverse_lazy('assessment:application-list')
-    success_message = "ICT Brief Cloud Risk Assessment deleted!"
+    success_message = "ICT Risk Assessment deleted!"
 
 
 # class PrivacyAssessmentDetail(DetailView):

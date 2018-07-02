@@ -1,7 +1,7 @@
 #from allauth.account.models import EmailAddress
 #from django.contrib.auth.models import User
 from django import forms
-from .models import Application, InformationClassification, CloudQuestionnaire, CloudICTBriefCloudRiskAssessment #, PrivacyAssessment, NonFunctionals
+from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment #, PrivacyAssessment, NonFunctionals
 
 class ApplicationForm(forms.ModelForm):
 	
@@ -17,6 +17,56 @@ class ApplicationForm(forms.ModelForm):
 			'application_type': forms.Select(attrs={'class' : 'w3-select w3-border'}),
 			'cost': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
 			'website': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+		}
+
+
+class ApplicationSubmitForm(forms.ModelForm):
+	
+	class Meta:
+		model = Application
+		fields = ['assess_status']
+		widgets = {			
+			'assess_status': forms.Select(attrs={'class' : 'w3-select w3-border', 'hidden' : True,}),
+		}
+
+
+class ApplicationSecurityDecisionForm(forms.ModelForm):
+	
+	class Meta:
+		model = Application
+		fields = [
+			'security_decision',
+			'security_comments',
+		]
+		widgets = {			
+			'security_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'security_comments': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
+		}
+
+
+class ApplicationPrivacyDecisionForm(forms.ModelForm):
+	
+	class Meta:
+		model = Application
+		fields = [
+			'privacy_decision',
+			'privacy_comments',
+		]
+		widgets = {			
+			'privacy_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'privacy_comments': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
+		}
+
+
+class ApplicationOwnerDecisionForm(forms.ModelForm):
+	
+	class Meta:
+		model = Application
+		fields = [
+			'owner_decision',
+		]
+		widgets = {			
+			'owner_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
 		}
 
 
@@ -51,10 +101,10 @@ class CloudQuestionnaireForm(forms.ModelForm):
 		}
 
 
-class CloudICTBriefCloudRiskAssessmentForm(forms.ModelForm):
+class ICTRiskAssessmentForm(forms.ModelForm):
 	
  	class Meta:
- 		model = CloudICTBriefCloudRiskAssessment
+ 		model = ICTRiskAssessment
  		fields = '__all__'
  	# 	widgets = {			
 		# 	'disclosure_risk': forms.CheckboxInput(attrs={'class' : 'w3-check'}),

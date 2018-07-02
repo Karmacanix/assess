@@ -35,6 +35,40 @@ class Application(models.Model):
 		default='C',
 		verbose_name="Type"
 	)
+	ASSESSMENT_STATUS = (
+		('N', 'New'),
+		('A', 'Assessing'),
+		('R', 'Rejected'),
+		('P', 'Approved'),
+	)
+	assess_status = models.CharField(
+		max_length=1,
+		choices=ASSESSMENT_STATUS,
+		default='N',
+		verbose_name="Status"
+	)
+	DECISION = (
+		('A', 'Accept'),
+		('R', 'Reject'),
+		('S', 'Assessing'),
+	)
+	security_decision = models.CharField(
+		max_length=1,
+		choices=DECISION,
+		default='S',
+	)
+	security_comments = models.CharField(max_length=254, null=True, blank=True)
+	privacy_decision = models.CharField(
+		max_length=1,
+		choices=DECISION,
+		default='S',
+	)
+	privacy_comments = models.CharField(max_length=254, null=True, blank=True)
+	owner_decision = models.CharField(
+		max_length=1,
+		choices=DECISION,
+		default='S',
+	)
 
 	def __str__(self):
 		return self.name
@@ -53,7 +87,7 @@ class InformationClassification(models.Model):
 	special_handling_sensitive_patient = models.BooleanField(default=False, help_text="Sensitive patient information (eg VIP’s)")
 	special_handling_sensitive_disease = models.BooleanField(default=False, help_text="Sensitive categories of disease (eg Mental Health)")
 	special_handling_sensitive_abuse = models.BooleanField(default=False, help_text="Sensitive subjects (violence and abuse; pandemics)")
-	special_handling_sensitive_other = models.CharField(max_length=200, blank=False, help_text="Other")
+	special_handling_sensitive_other = models.CharField(max_length=200, null=True, blank=True, help_text="Other")
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
 
@@ -89,7 +123,7 @@ class CloudQuestionnaire(models.Model):
 			setattr(self, method_v_name, curried_v_method)
 
 
-class CloudICTBriefCloudRiskAssessment(models.Model):
+class ICTRiskAssessment(models.Model):
 	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
 	termsconditions_URL = models.URLField(help_text="Please copy and paste the apps terms and conditions from the vendors website. Make sure you get the T&Cs for the version of the app you want.")
 	privacypolicy_URL = models.URLField(help_text="Please copy and paste the apps privacy policy from the vendors website. Make sure you get the privacy policy for the version of the app you want.")
@@ -122,9 +156,12 @@ class CloudICTBriefCloudRiskAssessment(models.Model):
 				return field.help_text
 	
 	def __init__(self, *args, **kwargs):
-		super(CloudICTBriefCloudRiskAssessment, self).__init__(*args, **kwargs)
+		super(ICTRiskAssessment, self).__init__(*args, **kwargs)
 
 		for field in self._meta.fields:
 			method_name = "get_{0}_help_text".format(field.name)
 			curried_method = curry(self._get_help_text, field_name=field.name)
 			setattr(self, method_name, curried_method)
+
+
+# class PrivacyAssessment

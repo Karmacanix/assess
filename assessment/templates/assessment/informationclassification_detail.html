@@ -75,7 +75,7 @@
       </tr>
       <tr class="w3-padding w3-border w3-pale-red">
         <td>Other</td>
-        <td>{{ informationclassification.special_handling_sensitive_other }}</td>
+        <td>{% if informationclassification.special_handling_sensitive_other %}{{ informationclassification.special_handling_sensitive_other }}{% endif %}</td>
       </tr>
     </tbody>
   </table>
