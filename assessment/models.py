@@ -148,6 +148,19 @@ class ICTRiskAssessment(models.Model):
 		('U', 'Unsure'),
 	)
 	dhb_log_data_changes = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="We will be able to notice if someone accidentally or maliously alters our data stored in the cloud service.")
+	CONVENIENCE_CHOICES = (
+		('N', 'None'),
+		('I', 'Inconvenience'),
+		('D', 'Disruption'),
+		('P', 'Personal Injury'),
+		('S', 'Significant economic loss'),
+		('H', 'Human life endangered'),
+	)
+	dhb_small_data_loss = models.CharField(max_length=1, choices=CONVENIENCE_CHOICES, default='N', help_text="The effect of someone accidentally or malciously altering a SMALL amount of our data stored in the cloud service.")
+	dhb_large_data_loss = models.CharField(max_length=1, choices=CONVENIENCE_CHOICES, default='N', help_text="The effect of someone accidentally or malciously altering a LARGE amount of our data stored in the cloud service.")
+	dhb_breach_plan = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="We have a plan we can put into effect if we learn that there has been a privacy or security breach concerning our data stored in the cloud service.")
+	dhb_disrupt_plan = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="We have a plan we can put into effect if the cloud service is disrupted for an extended period.")
+	dhb_perm_loss = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="We have a plan we can put into effect if the cloud service loses our data permanently.")
 
 	def _get_help_text(self, field_name):
 
@@ -163,5 +176,68 @@ class ICTRiskAssessment(models.Model):
 			curried_method = curry(self._get_help_text, field_name=field.name)
 			setattr(self, method_name, curried_method)
 
+
+class ICTVendorAssessment(models.Model):
+	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
+	UNSURE_CHOICES = (
+			('Y', 'Yes'),
+			('N', 'No'),
+			('U', 'Unsure'),
+		)
+	TECH_CHOICES = (
+		('M', 'Mobile device'),
+		('P', 'PC'),
+		('C', 'Citrix terminal'),
+		('M', 'Modality'),
+	)
+	INSTALL_CHOICES = (
+		('M', 'Install an app on a mobile device'),
+		('P', 'Install an app on a PC or Citrix Terminal'),
+		('B', 'Build a server'),
+		('D', 'Install a modality'),
+		('H', 'The DHB does not have to do anything'),
+	)
+	TIME_CHOICES = (
+		('H','Hours'), 
+		('D', 'Days'),
+		('M', 'Months'),
+		('N', 'Does not'),
+	)
+	host_country = models.CharField(max_length=120, help_text="What country or countries is the service hosted in?")
+	host_service = models.CharField(max_length=120, help_text="Name any 3rd party suppliers used by the vendor to supply this service e.g. Microsoft Azure, Amazon Web Services.")
+	host_deploy = models.CharField(max_length=1, choices=INSTALL_CHOICES, default='B', help_text="The service requires the customer to do the following work")
+	devices = models.CharField(max_length=1, choices=TECH_CHOICES, default='P', help_text="Users access the service using the following technology")
+	encrypt_transmit = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The data is encrypted when it is being transmitted to the cloud service")
+	encrypt_stored = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The customer’s data is encrypted inside the cloud service data store")
+	anonimised = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The data is de-identified BEFORE  it is sent to the cloud service")
+	back_up = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor backs up the data stored in the cloud service")
+	extract = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor provides a means for the customer to download a copy of the  data stored  the cloud service")
+	restore = models.CharField(max_length=1, choices=TIME_CHOICES, default='U', help_text="The vendor undertakes to re-instate the service in the event of an outage in")
+	log_admin = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor logs sys admin access to  the  data stored in the cloud service")
+	log_access = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor logs end user access to  the data stored in the cloud service")
+	shares_data = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor allows 3rd parties to access the data stored in the cloud service")
+	notify_breach = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor will tell the customer if there has been a security or privacy  incident concerning the data stored in the cloud service")
+	patches = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor regularly applies  security patches to applications, devices, servers and hypervisors  ")
+	testing = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor undertakes regular  security testing / certification")
+	advise_legal_issues = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor will tell the customer if there has been a Court Order concerning the data stored in the cloud service")
+	ownership = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor’s terms of service give the vendor ownership rights over the data stored in the cloud service")
+	penalty_breach = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor will pay compensation if the customer suffers a loss as a result of a privacy or security breach of data stored in the cloud service")
+	penalty_outage = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor will  pay compensation if the  customer suffer a loss as a result of the cloud service being unavailable for any length of time")
+	report_outages = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor provides a means for the customer to complain in the event of a privacy breach or service disruption")
+	backgroud_checks = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="The vendor’s HR procedures include background vetting of employees and contractors")
+
+	def _get_help_text(self, field_name):
+
+		for field in self._meta.fields:
+			if field.name == field_name:
+				return field.help_text
+	
+	def __init__(self, *args, **kwargs):
+		super(ICTVendorAssessment, self).__init__(*args, **kwargs)
+
+		for field in self._meta.fields:
+			method_name = "get_{0}_help_text".format(field.name)
+			curried_method = curry(self._get_help_text, field_name=field.name)
+			setattr(self, method_name, curried_method)
 
 # class PrivacyAssessment

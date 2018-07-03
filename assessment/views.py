@@ -10,8 +10,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 
 # this app
-from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment #, PrivacyAssessment, NonFunctionals
-from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm, ApplicationPrivacyDecisionForm, ApplicationOwnerDecisionForm, InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm #, PrivacyAssessmentForm, NonFunctionalsForm
+from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment
+from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm, ApplicationPrivacyDecisionForm, ApplicationOwnerDecisionForm, InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm, ICTVendorAssessmentForm #, PrivacyAssessmentForm, NonFunctionalsForm
 
 # Create your views here.
 class ApplicationList(ListView):
@@ -49,6 +49,11 @@ class ApplicationDetail(DetailView):
         else:
             context['bc'] = False
         
+        if hasattr(a, 'ictvendorassessment'):
+            context['va'] = True
+        else:
+            context['va'] = False
+        
         return context
 
 
@@ -76,7 +81,12 @@ class ApplicationSecurityAssess(SuccessMessageMixin, UpdateView):
             context['bc'] = True
         else:
             context['bc'] = False
-        
+                
+        if hasattr(a, 'ictvendorassessment'):
+            context['va'] = True
+        else:
+            context['va'] = False
+
         return context
 
     def get_success_url(self):
@@ -108,6 +118,11 @@ class ApplicationPrivacyAssess(SuccessMessageMixin, UpdateView):
         else:
             context['bc'] = False
         
+        if hasattr(a, 'ictvendorassessment'):
+            context['va'] = True
+        else:
+            context['va'] = False
+
         return context
 
     def get_success_url(self):
@@ -138,6 +153,11 @@ class ApplicationOwnerAssess(SuccessMessageMixin, UpdateView):
             context['bc'] = True
         else:
             context['bc'] = False
+        
+        if hasattr(a, 'ictvendorassessment'):
+            context['va'] = True
+        else:
+            context['va'] = False
         
         return context
 
@@ -273,7 +293,36 @@ class ICTRiskAssessmentDelete(SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('assessment:application-list')
     success_message = "ICT Risk Assessment deleted!"
 
+#ICTVendorAssessment
+class ICTVendorAssessmentDetail(DetailView):
+    model = ICTVendorAssessment
 
+
+class ICTVendorAssessmentCreate(SuccessMessageMixin, CreateView):
+    model = ICTVendorAssessment
+    form_class = ICTVendorAssessmentForm
+    success_message = 'ICT Vendor Assessment successfully saved!'
+    success_url = reverse_lazy('assessment:application-list')
+
+    def get_initial(self):
+        initial = super(ICTVendorAssessmentCreate, self).get_initial()
+        initial['app'] = self.kwargs['pk']
+        return initial
+
+
+class ICTVendorAssessmentUpdate(SuccessMessageMixin, UpdateView):
+    model = ICTVendorAssessment
+    form_class = ICTVendorAssessmentForm
+    success_message = 'ICT Vendor Assessment successfully updated!'
+
+    def get_success_url(self):
+        return reverse('assessment:ictvendorassessment-detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class ICTVendorAssessmentDelete(SuccessMessageMixin, DeleteView):
+    model = ICTVendorAssessment
+    success_url = reverse_lazy('assessment:application-list')
+    success_message = "ICT Vendor Assessment deleted!"
 # class PrivacyAssessmentDetail(DetailView):
 #     model = PrivacyAssessment
 

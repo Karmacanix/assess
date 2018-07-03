@@ -17,21 +17,28 @@
   </header>
   <br>
 <form class="w3-container w3-card-4" action="" method="post">
-   {% csrf_token %}
-   <h4>Cloud Questionnaire</h4>
-  <ul class="w3-ul w3-border">
-        {% for field in form %}
-          {% if field == form.app %}
-            <span hidden>{{ field }}</span>
-          {% else %}
-            <li>{{field.help_text}}{{ field.label }}{{ field }}</li>
-          {% endif %}
-        {% endfor %}
-      </ul><br/>
-  <a class="w3-button w3-section w3-red w3-large w3-ripple" href="{% url 'assessment:application-detail' view.kwargs.pk %}">{% trans "Cancel" %}</a>
-    <button class="primaryAction w3-button w3-section w3-blue w3-large w3-ripple" type="submit">{% trans "Save" %}</button>
-    
+  {% csrf_token %}
+  <h3>Cloud Questionnaire</h3>
+    <div class="w3-row w3-border w3-padding">
+      <div class="w3-col m6 l6"><strong>Description</strong></div>
+      <div class="w3-col m2 l2"><strong>Yes/No</strong></div>
+      <div class="w3-col m4 l4"><strong>Risk</strong></div>
+    </div>
+      {% for field in form %}
+        {% if field == form.app %}
+          <span hidden>{{ field }}</span>
+        {% else %}
+          <div class="w3-row w3-border w3-padding">
+            <div class="w3-col m6 l6">{{ field.help_text }}</div>
+            <div class="w3-col m2 l2">{{ field }}</div>
+            <div class="w3-col m4 l4">{{ field.label }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+      <br>
 </form>
+<a class="w3-button w3-section w3-red w3-large w3-ripple" href="{% url 'assessment:application-detail' view.kwargs.pk %}">{% trans "Cancel" %}</a>
+<button class="primaryAction w3-button w3-section w3-blue w3-large w3-ripple" type="submit">{% trans "Save" %}</button>
 </div>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 #from allauth.account.models import EmailAddress
 #from django.contrib.auth.models import User
 from django import forms
-from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment #, PrivacyAssessment, NonFunctionals
+from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment #, PrivacyAssessment, NonFunctionals
 
 class ApplicationForm(forms.ModelForm):
 	
@@ -106,13 +106,53 @@ class ICTRiskAssessmentForm(forms.ModelForm):
  	class Meta:
  		model = ICTRiskAssessment
  		fields = '__all__'
- 	# 	widgets = {			
-		# 	'disclosure_risk': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
-		# 	'alteration_risk': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
-		# 	'loss_risk': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
-		# 	'continuity_risk': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
-		# }
+ 		widgets = {			
+			'termsconditions_URL': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+			'privacypolicy_URL': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+			'dhb_record_volume': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'dhb_downtime_before_critical': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'dhb_log_data_changes': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'dhb_small_data_loss': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'dhb_large_data_loss': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'dhb_breach_plan': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'dhb_disrupt_plan': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'dhb_perm_loss': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+		}
+		
 
+class ICTVendorAssessmentForm(forms.ModelForm):
+	
+ 	class Meta:
+ 		model = ICTVendorAssessment
+ 		fields = '__all__'
+ 		widgets = {
+ 			'host_country': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+ 			'host_service': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+			'host_deploy': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'devices': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'encrypt_transmit': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'encrypt_stored': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'anonimised': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'back_up': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'extract': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'restore': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'log_admin': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'log_access': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'shares_data': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'notify_breach': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'patches': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'testing': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'advise_legal_issues': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'ownership': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'penalty_breach': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'penalty_outage': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'report_outages': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'backgroud_checks': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+		}
+
+		# app, host_country,host_service, host_deploy, devices, encrypt_transmit, encrypt_stored, anonimised, back_up, extract, restore, 
+		# log_admin, log_access, shares_data, notify_breach, patches, testing, advise_legal_issues, ownership, penalty_breach, penalty_outage,
+		#  report_outages, backgroud_checks
 
 # class PrivacyAssessmentForm(forms.ModelForm):
 	

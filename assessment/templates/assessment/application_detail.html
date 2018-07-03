@@ -57,6 +57,11 @@
         {% else %}
           <li><span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-1x"></i></span><a href="{% url 'assessment:ictriskassessment-create' application.name %}">{% trans "Start ICT Risk Assessment" %}</a></li>
         {% endif %}
+        {% if va %}  
+          <li><span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span><a href="{% url 'assessment:ictvendorassessment-detail' application.name %}">{% trans "View ICT Vendor Assessment" %}</a></li>
+        {% else %}
+          <li><span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-1x"></i></span><a href="{% url 'assessment:ictvendorassessment-create' application.name %}">{% trans "Start ICT Vendor Assessment" %}</a></li>
+        {% endif %}
     </div>
 <br>
 
