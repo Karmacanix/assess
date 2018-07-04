@@ -11,37 +11,13 @@
 <!-- Header -->
 <div class="w3-container w3-margin-top">
   <header class="w3-black w3-opacity w3-padding-16">
-    <h1 class="w3-margin">Applications</h1>
+    <h1 class="w3-margin">Accredited Applications</h1>
   </header>
     {% if application_list %}
     <!-- Rejected applications -->
-    {% if rejected_list %}
-    <br>
-    <h3>Rejected</h3>
-    <p>These applications are considered too high a security or privacy risk and are unsuitable for use.</p>
-    <table class="w3-table-all w3-hoverable w3-card-4">
-      <thead>
-        <tr class="w3-light-grey">
-          <th>{% trans "Name" %}</th>
-          <th>{% trans "Purpose" %}</th>
-          <th>{% trans "Type" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for application in rejected_list %}
-        <tr>
-          <td><a class="w3-text-indigo" href="{% url 'assessment:application-detail' application.name %}">{{ application.name }}</a></td>
-          <td>{{ application.purpose }}</td>
-          <td>{{ application.get_application_type_display }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
     {% if accepted_list %}
     <br>
-    <h3>Approved</h3>
-    <p>Applications that have been assessed, reviewed and are approved for use.</p>
+    <h3>Whitelist</h3>
     <table class="w3-table-all w3-hoverable w3-card-4">
       <thead>
         <tr class="w3-light-grey">
@@ -62,11 +38,9 @@
     </table>
     {% endif %}
     
-    {% if user.is_authenticated %}
-    {% if new_list %}
+    {% if rejected_list %}
     <br>
-    <h3>New</h3>
-    <p>Recently registered applications. Once the requestor has completed each self-service assessment they can submit the information for review and approval by ICT Security, the Privacy Office and the Business Owner.</p>
+    <h3>Blacklist</h3>
     <table class="w3-table-all w3-hoverable w3-card-4">
       <thead>
         <tr class="w3-light-grey">
@@ -76,7 +50,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for application in new_list %}
+        {% for application in rejected_list %}
         <tr>
           <td><a class="w3-text-indigo" href="{% url 'assessment:application-detail' application.name %}">{{ application.name }}</a></td>
           <td>{{ application.purpose }}</td>
@@ -86,169 +60,16 @@
       </tbody>
     </table>
     {% endif %}
-    {% if assessing_list %}
-    <br>
-    <h3>In Review</h3>
-    <p>These applications are currently being reviewed by ICT Security, the Privacy Office and the Business Owner.</p>
-    <table class="w3-table-all w3-hoverable w3-card-4">
-      <thead>
-        <tr class="w3-light-grey">
-          <th>{% trans "Name" %}</th>
-          <th>{% trans "Purpose" %}</th>
-          <th>{% trans "Type" %}</th>
-          <th>{% trans "ICT Security" %}</th>
-          <th>{% trans "Privacy Office" %}</th>
-          <th>{% trans "Business Owner" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for application in assessing_list %}
-        <tr>
-          <td><a class="w3-text-indigo" href="{% url 'assessment:application-detail' application.name %}">{{ application.name }}</a></td>
-          <td>{{ application.purpose }}</td>
-          <td>{{ application.get_application_type_display }}</td>
-          <td>
-            {% if application.security_decision == "A" %}
-              <span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span>
-            {% elif application.security_decision == "R"%}
-              <span class='w3-text-red'><i class="fa fa-times-circle fa-fw"></i></span>
-            {% else %}
-              <span class='w3-text-blue'><i class="fa fa-question-circle fa-fw"></i></span>
-            {% endif %}
-          </td>
-          <td>
-            {% if application.privacy_decision == "A" %}
-              <span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span>
-            {% elif application.privacy_decision == "R"%}
-              <span class='w3-text-red'><i class="fa fa-times-circle fa-fw"></i></span>
-            {% else %}
-              <span class='w3-text-blue'><i class="fa fa-question-circle fa-fw"></i></span>
-            {% endif %}
-          </td>
-          <td>
-            {% if application.owner_decision == "A" %}
-              <span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span>
-            {% elif application.owner_decision == "R"%}
-              <span class='w3-text-red'><i class="fa fa-times-circle fa-fw"></i></span>
-            {% else %}
-              <span class='w3-text-blue'><i class="fa fa-question-circle fa-fw"></i></span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-    <!-- Approval: ICT SECURITY -->
-    {% if request.user|has_group:"security" %}
-    {% if security_list %}
-    <br>
-    <h3>ICT Security Review</h3>
-    <p>These applications are ready for ICT Security review. On completion of the review ICT Security must indicate whether they accept the risk and approve the application for use or if the risk is too high, reject the application.</p>
-    <table class="w3-table-all w3-hoverable w3-card-4">
-      <thead>
-        <tr class="w3-light-grey">
-          <th>{% trans "Name" %}</th>
-          <th>{% trans "Purpose" %}</th>
-          <th>{% trans "Type" %}</th>
-          <th>{% trans "ICT Security" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for application in security_list %}
-        <tr>
-          <td><a class="w3-text-indigo" href="{% url 'assessment:application-security-assess' application.name %}">{{ application.name }}</a></td>
-          <td>{{ application.purpose }}</td>
-          <td>{{ application.get_application_type_display }}</td>
-          <td>
-            {% if application.security_decision == "A" %}
-              <span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span>
-            {% elif application.security_decision == "R"%}
-              <span class='w3-text-red'><i class="fa fa-times-circle fa-fw"></i></span>
-            {% else %}
-              <span class='w3-text-blue'><i class="fa fa-question-circle fa-fw"></i></span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-    {% endif %}
-    <!-- Approval: PRIVACY -->
-    {% if request.user|has_group:"privacy" %}
-    {% if privacy_list %}
-    <br>
-    <h3>Privacy Office Review</h3>
-    <p>These applications are ready for Privacy Office review. On completion of the review the Privacy Office must indicate whether they accept the risk and approve the application for use or if the risk is too high, reject the application.</p>
-    <table class="w3-table-all w3-hoverable w3-card-4">
-      <thead>
-        <tr class="w3-light-grey">
-          <th>{% trans "Name" %}</th>
-          <th>{% trans "Purpose" %}</th>
-          <th>{% trans "Type" %}</th>
-          <th>{% trans "Privacy Office" %}</th>
-        </thead>
-      <tbody>
-        {% for application in privacy_list %}
-        <tr>
-          <td><a class="w3-text-indigo" href="{% url 'assessment:application-privacy-assess' application.name %}">{{ application.name }}</a></td>
-          <td>{{ application.purpose }}</td>
-          <td>{{ application.get_application_type_display }}</td>
-          <td>
-            {% if application.privacy_decision == "A" %}
-              <span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span>
-            {% elif application.privacy_decision == "R"%}
-              <span class='w3-text-red'><i class="fa fa-times-circle fa-fw"></i></span>
-            {% else %}
-              <span class='w3-text-blue'><i class="fa fa-question-circle fa-fw"></i></span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-    {% endif %}
-    <!-- Approval: BUSINESS OWNER -->
-    {% if owner_list %}
-    <br>
-    <h3>Business Owner Approval</h3>
-    <p>Once the ICT Security and Privacy Office have made their decisions, the Business Owner must review and accept or reject this application.</p>
-    <table class="w3-table-all w3-hoverable w3-card-4">
-      <thead>
-        <tr class="w3-light-grey">
-          <th>{% trans "Name" %}</th>
-          <th>{% trans "Purpose" %}</th>
-          <th>{% trans "Type" %}</th>
-          <th>{% trans "Business Owner" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for application in owner_list %}
-        <tr>
-          <td><a class="w3-text-indigo" href="{% url 'assessment:application-owner-assess' application.name %}">{{ application.name }}</a></td>
-          <td>{{ application.purpose }}</td>
-          <td>{{ application.get_application_type_display }}</td>
-          <td>
-            {% if application.owner_decision == "A" %}
-              <span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span>
-            {% elif application.owner_decision == "R"%}
-              <span class='w3-text-red'><i class="fa fa-times-circle fa-fw"></i></span>
-            {% else %}
-              <span class='w3-text-blue'><i class="fa fa-question-circle fa-fw"></i></span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-    {% endif %}
+    
     {% else %}
       <h3 class="w3-center">No applications available.</h3>
     {% endif %}
+    {% if request.user.is_anonymous %}
+    <p class="w3-left"><a class="w3-button w3-green w3-padding-large w3-large w3-margin-top" href="{% url 'account_login' %}">LOGIN</a></p>
+    {% endif %}
+    {% if request.user.is_authenticated %}
     <p class="w3-left"><a class="w3-button w3-red w3-padding-large w3-large w3-margin-top" href="{% url 'assessment:application-create' %}">ASSESS APPLICATION</a></p>
+    {% endif %}
     <br>
   </div>
 {% endblock %}

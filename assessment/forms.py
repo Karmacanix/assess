@@ -58,15 +58,15 @@ class ApplicationPrivacyDecisionForm(forms.ModelForm):
 		}
 
 
-class ApplicationOwnerDecisionForm(forms.ModelForm):
+class ApplicationClinicalDecisionForm(forms.ModelForm):
 	
 	class Meta:
 		model = Application
 		fields = [
-			'owner_decision',
+			'clinical_decision',
 		]
 		widgets = {			
-			'owner_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'clinical_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
 		}
 
 

@@ -2,6 +2,7 @@
 {% load static %}
 {% load account %}
 {% load i18n %}
+{% load assess_tags %}
 <html>
 <head>
 <title>
@@ -29,11 +30,15 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <div class="w3-top">
   <div class="w3-bar w3-red w3-card w3-left-align w3-large">
     <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-    <a href="{% url 'home' %}" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
     <a href="{% url 'assessment:application-list' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Applications</a>
-    <a href="{% url 'what' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Assessment Guide</a>
-    <a href="{% url 'who' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Team</a>
-    <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Contact</a>
+    {% if request.user.is_authenticated %}
+      <a href="{% url 'assessment:application-request-list' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Requests</a>
+    {% endif %}
+    {% if request.user|has_group:"security" or request.user|has_group:"privacy" %}
+      <a href="{% url 'assessment:application-assess-list' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Assess</a>
+    {% endif %}
+    <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Guides</a>
+    <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Help</a>
     {% if request.user.is_superuser %}
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Admin</a>
     {% endif %}
@@ -47,9 +52,14 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
   <!-- Navbar on small screens -->
   <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
     <a href="{% url 'assessment:application-list' %}" class="w3-bar-item w3-button w3-padding-large">Applications</a>
-    <a href="{% url 'what' %}" class="w3-bar-item w3-button w3-padding-large">Assessment Guide</a>
-    <a href="{% url 'who' %}" class="w3-bar-item w3-button w3-padding-large">Team</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">Contact</a>
+    {% if request.user.is_authenticated %}
+      <a href="{% url 'assessment:application-request-list' %}" class="w3-bar-item w3-button w3-padding-large">Requests</a>
+    {% endif %}
+    {% if request.user|has_group:"security" or request.user|has_group:"privacy" %}
+      <a href="{% url 'assessment:application-assess-list' %}" class="w3-bar-item w3-button w3-padding-large">Assess</a>    
+    {% endif %}
+    <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-padding-large">Guides</a>
+    <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-padding-large">Help</a>
     {% if request.user.is_superuser %}
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-padding-large">Admin</a>
     {% endif %}
@@ -67,7 +77,6 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <!-- message -->
   {% if messages %}
   <div class="w3-panel w3-light-green">
-    <h3>Messages</h3>
       <ul>
         {% for message in messages %}
           <li>{{message}}</li>

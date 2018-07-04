@@ -64,11 +64,14 @@ class Application(models.Model):
 		default='S',
 	)
 	privacy_comments = models.CharField(max_length=254, null=True, blank=True)
-	owner_decision = models.CharField(
+	clinical_decision = models.CharField(
 		max_length=1,
 		choices=DECISION,
 		default='S',
 	)
+	clinical_comments = models.CharField(max_length=254, null=True, blank=True)
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
 		return self.name

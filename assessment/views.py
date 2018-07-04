@@ -5,13 +5,13 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 
 # this app
 from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment
-from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm, ApplicationPrivacyDecisionForm, ApplicationOwnerDecisionForm, InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm, ICTVendorAssessmentForm #, PrivacyAssessmentForm, NonFunctionalsForm
+from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm, ApplicationPrivacyDecisionForm, ApplicationClinicalDecisionForm, InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm, ICTVendorAssessmentForm #, PrivacyAssessmentForm, NonFunctionalsForm
 
 # Create your views here.
 class ApplicationList(ListView):
@@ -19,14 +19,33 @@ class ApplicationList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationList, self).get_context_data(**kwargs)
-        context['assessing_list'] = Application.objects.filter(assess_status='A')
-        context['security_list'] = Application.objects.filter(assess_status='A', security_decision='S')
-        context['privacy_list'] = Application.objects.filter(assess_status='A', privacy_decision='S')
-        context['owner_list'] = Application.objects.filter(assess_status='A', owner_decision='S', business_owner=self.request.user.id)#, privacy_decision='A' or 'R', security_decision='A' or 'R')
         context['rejected_list'] = Application.objects.filter(assess_status='R')
         context['accepted_list'] = Application.objects.filter(assess_status='P')
+        return context
+
+
+class ApplicationAssessList(ListView):
+    model = Application
+    template_name = "assessment/applicationassess_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ApplicationAssessList, self).get_context_data(**kwargs)
+        context['security_list'] = Application.objects.filter(assess_status='A', security_decision='S')
+        context['privacy_list'] = Application.objects.filter(assess_status='A', privacy_decision='S')
+        context['clinical_list'] = Application.objects.filter(assess_status='A', clinical_decision='S')
+        return context
+
+
+class ApplicationRequestList(ListView):
+    model = Application
+    template_name = "assessment/applicationrequest_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ApplicationRequestList, self).get_context_data(**kwargs)
+        context['assessing_list'] = Application.objects.filter(assess_status='A')
         context['new_list'] = Application.objects.filter(assess_status='N')
         return context
+
 
 class ApplicationDetail(DetailView):
     model = Application
@@ -129,14 +148,14 @@ class ApplicationPrivacyAssess(SuccessMessageMixin, UpdateView):
         return reverse('assessment:application-list')
 
 
-class ApplicationOwnerAssess(SuccessMessageMixin, UpdateView):
+class ApplicationClinicalAssess(SuccessMessageMixin, UpdateView):
     model = Application
-    form_class = ApplicationOwnerDecisionForm
+    form_class = ApplicationClinicalDecisionForm
     template_name = "assessment/application_assess.html"
-    success_message = 'Application business owner assessment decision successfully updated!'
+    success_message = 'Clinical Advisor decision successfully updated!'
 
     def get_context_data(self, **kwargs):
-        context = super(ApplicationOwnerAssess, self).get_context_data(**kwargs)
+        context = super(ApplicationClinicalAssess, self).get_context_data(**kwargs)
         a = Application.objects.get(pk=self.kwargs['pk'])
         
         if hasattr(a, 'informationclassification'):
