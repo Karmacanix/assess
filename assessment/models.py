@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse_lazy, reverse
 from django.utils.functional import curry
+from django_countries.fields import CountryField
 
 # Create your models here.
 class Application(models.Model):
@@ -47,6 +48,12 @@ class Application(models.Model):
 		default='N',
 		verbose_name="Status"
 	)
+	RISK_RATING = (
+		('N', 'No / Negligible Risk'),
+		('L', 'Low impact Risk'),
+		('H', 'High Impact Risk'),
+		('E', 'Extreme Risk'),
+	)
 	DECISION = (
 		('A', 'Accept'),
 		('R', 'Reject'),
@@ -54,20 +61,20 @@ class Application(models.Model):
 	)
 	security_decision = models.CharField(
 		max_length=1,
-		choices=DECISION,
-		default='S',
+		choices=RISK_RATING,
+		default='N',
 	)
 	security_comments = models.CharField(max_length=254, null=True, blank=True)
 	privacy_decision = models.CharField(
 		max_length=1,
-		choices=DECISION,
-		default='S',
+		choices=RISK_RATING,
+		default='N',
 	)
 	privacy_comments = models.CharField(max_length=254, null=True, blank=True)
 	clinical_decision = models.CharField(
 		max_length=1,
-		choices=DECISION,
-		default='S',
+		choices=RISK_RATING,
+		default='N',
 	)
 	clinical_comments = models.CharField(max_length=254, null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
@@ -97,10 +104,10 @@ class InformationClassification(models.Model):
 
 class CloudQuestionnaire(models.Model):
 	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
-	disclosure_risk = models.BooleanField(default=False, verbose_name='Information Disclosure Risk', help_text="The information is publicly available or it can be de-identified so that its release into the public domain would not compromise our obligations to a person or an organisation.")
-	alteration_risk = models.BooleanField(default=False, verbose_name='Information Alteration Risk', help_text="No person or organisation will be harmed if the information is altered by mistake or intentionally by a wrongdoer.")
-	loss_risk = models.BooleanField(default=False, verbose_name='Information Loss Risk', help_text="No person or orginastion will be harmed if the information is lost by the cloud provider; OR we can easily maintain a local copy of the information.")
-	continuity_risk = models.BooleanField(default=False, verbose_name='Business Continuity Risk', help_text="We will be able to carry on our activities if the service is disrupted or is unavailable for an extended.")
+	disclosure_risk = models.BooleanField(default=False, verbose_name='Privacy Breach', help_text="The information is publicly available or it can be de-identified so that its release into the public domain would not compromise our obligations to a person or an organisation.")
+	alteration_risk = models.BooleanField(default=False, verbose_name='Information Alteration', help_text="No person or organisation will be harmed if the information is altered by mistake or intentionally by a wrongdoer.")
+	loss_risk = models.BooleanField(default=False, verbose_name='Data Loss', help_text="No person or orginastion will be harmed if the information is lost by the cloud provider OR we can easily maintain a local copy of the information.")
+	continuity_risk = models.BooleanField(default=False, verbose_name='Business Continuity', help_text="We will be able to carry on our activities if the service is disrupted or is unavailable for an extended.")
 
 	def _get_help_text(self, field_name):
 
@@ -206,7 +213,7 @@ class ICTVendorAssessment(models.Model):
 		('M', 'Months'),
 		('N', 'Does not'),
 	)
-	host_country = models.CharField(max_length=120, help_text="1. What country or countries is the service hosted in?")
+	host_country = CountryField(help_text="1. What country or countries is the service hosted in?")
 	host_service = models.CharField(max_length=120, help_text="2. Name any 3rd party suppliers used by the vendor to supply this service e.g. Microsoft Azure, Amazon Web Services.")
 	host_deploy = models.CharField(max_length=1, choices=INSTALL_CHOICES, default='B', help_text="3. The service requires the customer to do the following work")
 	devices = models.CharField(max_length=1, choices=TECH_CHOICES, default='P', help_text="4. Users access the service using the following technology")

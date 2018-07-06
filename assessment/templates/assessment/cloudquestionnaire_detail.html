@@ -14,42 +14,40 @@
     <h1 class="w3-margin">Cloud Questionnaire</h1>
   </header>
   <br>
-  <div class="w3-container w3-card-4">
-
-
-
-   <h4>Cloud Questionnaire</h4>
-    <span hidden>{{ cloudquestionnaire.app }}</span>
-  <table class="w3-table-all w3-hoverable">
-    <thead>
-      <th>Description</th>
-      <th>Yes/No</th>
-      <th>Risk</th>
-    </thead>
-    <tbody>
-      <tr class="w3-padding w3-border">
-        <td>{{ cloudquestionnaire.get_disclosure_risk_help_text }}</td>
-        <td>{% if cloudquestionnaire.disclosure_risk %}<span class='w3-text-green'><i class="fa fa-check-circle fa-fw fa-2x"></i></span>{% else %}<span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-2x"></i></span>{% endif %}</td>
-        <td>{{ cloudquestionnaire.get_disclosure_risk_verbose_name|upper }}</td>
-      </tr>
-      <tr class="w3-padding w3-border">
-        <td>{{ cloudquestionnaire.get_alteration_risk_help_text }}</td>
-        <td>{% if cloudquestionnaire.alteration_risk %}<span class='w3-text-green'><i class="fa fa-check-circle fa-fw fa-2x"></i></span>{% else %}<span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-2x"></i></span>{% endif %}</td>
-        <td>{{ cloudquestionnaire.get_alteration_risk_verbose_name|upper }}</td>
-      </tr>
-      <tr class="w3-padding w3-border">
-        <td>{{ cloudquestionnaire.get_loss_risk_help_text }}</td>
-        <td>{% if cloudquestionnaire.loss_risk %}<span class='w3-text-green'><i class="fa fa-check-circle fa-fw fa-2x"></i></span>{% else %}<span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-2x"></i></span>{% endif %}</td>
-        <td>{{ cloudquestionnaire.get_loss_risk_verbose_name|upper }}</td>
-      </tr>
-      <tr class="w3-padding w3-border">
-        <td>{{ cloudquestionnaire.get_continuity_risk_help_text }}</td>
-        <td>{% if cloudquestionnaire.continuity_risk %}<span class='w3-text-green'><i class="fa fa-check-circle fa-fw fa-2x"></i></span>{% else %}<span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-2x"></i></span>{% endif %}</td>
-        <td>{{ cloudquestionnaire.get_continuity_risk_verbose_name|upper }}</td>
-      </tr>
-    </tbody>
-  </table><br/> 
-    
+<div class="w3-container w3-card-4 w3-padding" action="" method="post">
+    {% csrf_token %}
+    <div class="w3-row w3-border w3-padding">
+      <div class="w3-col m6 l6"><strong>Description</strong></div>
+      <div class="w3-col m2 l2"><strong>Yes/No</strong></div>
+      <div class="w3-col m4 l4"><strong>Risk</strong></div>
+    </div>
+    <div class="w3-row w3-border w3-padding">
+        <div class="w3-col m6 l6">{{ cloudquestionnaire.get_disclosure_risk_help_text }}</div>
+        <div class="w3-col m2 l2">{% if cloudquestionnaire.disclosure_risk %}<span class='w3-text-green'><i class="fa fa-check fa-fw fa-2x"></i></span>{% else %}<span class='w3-text-red'><i class="fa fa-times fa-fw fa-2x"></i></span>{% endif %}</div>
+        <div class="w3-col m4 l4">{{ cloudquestionnaire.get_disclosure_risk_verbose_name }}</div>
+      </div>
+      <div class="w3-row w3-border w3-padding">
+        <div class="w3-col m6 l6">{{ cloudquestionnaire.get_alteration_risk_help_text }}</div>
+        <div class="w3-col m2 l2">{% if cloudquestionnaire.alteration_risk %}<span class='w3-text-green'><i class="fa fa-check fa-fw fa-2x"></i></span>{% else %}<span class='w3-text-red'><i class="fa fa-times fa-fw fa-2x"></i></span>{% endif %}</div>
+        <div class="w3-col m4 l4">{{ cloudquestionnaire.get_alteration_risk_verbose_name }}</div>
+      </div>
+      <div class="w3-row w3-border w3-padding">
+        <div class="w3-col m6 l6">{{ cloudquestionnaire.get_loss_risk_help_text }}</div>
+        <div class="w3-col m2 l2">
+          {% if cloudquestionnaire.loss_risk %}
+            <span class='w3-text-green'><i class="fa fa-check fa-fw fa-2x"></i></span>
+          {% else %}
+            <span class='w3-text-red'><i class="fa fa-times fa-fw fa-2x"></i></span>
+          {% endif %}
+        </div>
+        <div class="w3-col m4 l4">{{ cloudquestionnaire.get_loss_risk_verbose_name }}</div>
+      </div>
+      <div class="w3-row w3-border w3-padding">
+        <div class="w3-col m6 l6">{{ cloudquestionnaire.get_continuity_risk_help_text }}</div>
+        <div class="w3-col m2 l2">{% if cloudquestionnaire.continuity_risk %}<span class='w3-text-green'><i class="fa fa-check fa-fw fa-2x"></i></span>{% else %}<span class='w3-text-red'><i class="fa fa-times fa-fw fa-2x"></i></span>{% endif %}</div>
+        <div  class="w3-col m4 l4">{{ cloudquestionnaire.get_continuity_risk_verbose_name }}</div>
+      </div>
+      
     <a class="w3-button w3-section w3-red w3-large w3-ripple" href="{% url 'assessment:application-detail' cloudquestionnaire.app %}">{% trans "Cancel" %}</a>
     <a class="w3-button w3-section w3-blue w3-large w3-ripple" href="{% url 'assessment:cloudquestionnaire-update' cloudquestionnaire.app %}">{% trans "Edit" %}</a>
     <a class="w3-button w3-section w3-orange w3-large w3-ripple" href="{% url 'assessment:cloudquestionnaire-delete' cloudquestionnaire.app %}">{% trans "Delete" %}</a>

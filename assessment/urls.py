@@ -20,7 +20,7 @@ from assessment import views
 app_name = 'assessment'
 urlpatterns = [
     path('application/create/', views.ApplicationCreate.as_view(), name='application-create'),
-    path('application/list/', views.ApplicationList.as_view(), name='application-list'),
+    path('', views.ApplicationList.as_view(), name='application-list'),
     path('application/list/assess/', views.ApplicationAssessList.as_view(), name='application-assess-list'),
     path('application/list/request/', views.ApplicationRequestList.as_view(), name='application-request-list'),
     path('application/<str:pk>/', views.ApplicationDetail.as_view(), name='application-detail'),
