@@ -3,8 +3,23 @@ from django.db import models
 from django.urls import reverse_lazy, reverse
 from django.utils.functional import curry
 from django_countries.fields import CountryField
+from simple_history.models import HistoricalRecords
 
 # Create your models here.
+class DHBs(models.Model):
+	name = models.CharField(max_length=30)
+
+	def __str__(self):
+		return self.name
+
+class ApplicationType(models.Model):
+	name = models.CharField(max_length=30)
+	icon_html = models.CharField(max_length=200)
+
+	def __str__(self):
+		return self.name
+
+
 class Application(models.Model):
 	requestor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="requestor")
 	business_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="business_owner")
@@ -23,19 +38,7 @@ class Application(models.Model):
 		default='Y',
 		verbose_name="Renewal"
 	)
-	APPLICATION_CHOICES = (
-		('C', 'Cloud'),
-		('M', 'Mobile'),
-		('D', 'Desktop'),
-		('T', 'Tablet'),
-		('H', 'Hybrid'),
-	)
-	application_type = models.CharField(
-		max_length=1,
-		choices=APPLICATION_CHOICES,
-		default='C',
-		verbose_name="Type"
-	)
+	application_type = models.ManyToManyField(ApplicationType)
 	ASSESSMENT_STATUS = (
 		('N', 'New'),
 		('A', 'Assessing'),
@@ -54,37 +57,38 @@ class Application(models.Model):
 		('H', 'High Impact Risk'),
 		('E', 'Extreme Risk'),
 	)
-	DECISION = (
-		('A', 'Accept'),
-		('R', 'Reject'),
-		('S', 'Assessing'),
-	)
+	dhbs = models.ManyToManyField(DHBs)
 	security_decision = models.CharField(
 		max_length=1,
 		choices=RISK_RATING,
-		default='N',
+		blank=True,
+		null=True,
 	)
 	security_comments = models.CharField(max_length=254, null=True, blank=True)
 	privacy_decision = models.CharField(
 		max_length=1,
 		choices=RISK_RATING,
-		default='N',
+		blank=True,
+		null=True,
 	)
 	privacy_comments = models.CharField(max_length=254, null=True, blank=True)
 	clinical_decision = models.CharField(
 		max_length=1,
 		choices=RISK_RATING,
-		default='N',
+		blank=True,
+		null=True,
 	)
 	clinical_comments = models.CharField(max_length=254, null=True, blank=True)
+	attachments =  models.FileField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
+	history = HistoricalRecords()
 
 	def __str__(self):
 		return self.name
 
 	def get_absolute_url(self):
-		return reverse('assessment:application-detail', kwargs={'pk': self.name})
+		return reverse('assessment:application-detail', kwargs={'pk': self})
 
 
 class InformationClassification(models.Model):
@@ -100,6 +104,7 @@ class InformationClassification(models.Model):
 	special_handling_sensitive_other = models.CharField(max_length=200, null=True, blank=True, help_text="Other")
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
+	history = HistoricalRecords()
 
 
 class CloudQuestionnaire(models.Model):
@@ -187,25 +192,26 @@ class ICTRiskAssessment(models.Model):
 			setattr(self, method_name, curried_method)
 
 
+class TechDelivery(models.Model):
+	name = models.CharField(max_length=100)
+
+	def __str__(self):
+		return self.name
+
+
+class TechInstall(models.Model):
+	name = models.CharField(max_length=100)
+
+	def __str__(self):
+		return self.name
+
+
 class ICTVendorAssessment(models.Model):
 	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
 	UNSURE_CHOICES = (
 			('Y', 'Yes'),
 			('N', 'No'),
 			('U', 'Unsure'),
-		)
-	TECH_CHOICES = (
-		('M', 'Mobile device'),
-		('P', 'PC'),
-		('C', 'Citrix terminal'),
-		('M', 'Modality'),
-	)
-	INSTALL_CHOICES = (
-		('M', 'Install an app on a mobile device'),
-		('P', 'Install an app on a PC or Citrix Terminal'),
-		('B', 'Build a server'),
-		('D', 'Install a modality'),
-		('H', 'The DHB does not have to do anything'),
 	)
 	TIME_CHOICES = (
 		('H','Hours'), 
@@ -215,8 +221,8 @@ class ICTVendorAssessment(models.Model):
 	)
 	host_country = CountryField(help_text="1. What country or countries is the service hosted in?")
 	host_service = models.CharField(max_length=120, help_text="2. Name any 3rd party suppliers used by the vendor to supply this service e.g. Microsoft Azure, Amazon Web Services.")
-	host_deploy = models.CharField(max_length=1, choices=INSTALL_CHOICES, default='B', help_text="3. The service requires the customer to do the following work")
-	devices = models.CharField(max_length=1, choices=TECH_CHOICES, default='P', help_text="4. Users access the service using the following technology")
+	host_deploy = models.ManyToManyField(TechInstall, help_text="3. The service requires the customer to do the following work")
+	devices = models.ManyToManyField(TechDelivery, help_text="4. Users access the service using the following technology")
 	encrypt_transmit = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="5. The data is encrypted when it is being transmitted to the cloud service")
 	encrypt_stored = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="6. The customer’s data is encrypted inside the cloud service data store")
 	anonimised = models.CharField(max_length=1, choices=UNSURE_CHOICES, default='U', help_text="7. The data is de-identified BEFORE  it is sent to the cloud service")
@@ -250,4 +256,29 @@ class ICTVendorAssessment(models.Model):
 			curried_method = curry(self._get_help_text, field_name=field.name)
 			setattr(self, method_name, curried_method)
 
-# class PrivacyAssessment
+
+class PrivacyAssessment(models.Model):
+	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
+	pia_upload = models.FileField(verbose_name='Upload completed Privacy Assessment')
+
+
+class CATmeeting(models.Model):
+	# meeting_date
+	# attendees
+	# absentees
+	# meeting_location
+	# attach_mins
+	# decision - accept, reject, escalate
+	# list of apps and associated CAT decision
+	pass
+
+
+class IPSGmeeting(models.Model):
+	# meeting_date
+	# attendees
+	# absentees
+	# meeting_location
+	# attach_mins
+	# decision - accept, reject, escalate
+	# list of apps and associated IPSG decision
+	pass

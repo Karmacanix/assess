@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('assessment/', include('assessment.urls')),
+    path('select2/', include('django_select2.urls')),
     path('', ApplicationList.as_view(), name='home'),
     path('guides/', guides, name='guides'),
     path('help/', help, name='help'),   

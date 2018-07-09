@@ -6,6 +6,8 @@
 
 {% block head_title %}{% trans "Application Form" %}{% endblock %}
 
+{% block extra_head %}{{ form.media.css }}{% endblock %}
+
 {% block content %}
 <div class="w3-container w3-margin-top">
   <header class="w3-black w3-opacity w3-padding-16">
@@ -32,4 +34,8 @@
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_body %}
+  {{ form.media.js }}
 {% endblock %}

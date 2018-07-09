@@ -38,6 +38,9 @@ AUTHENTICATION_BACKENDS = (
 # Application definition
 
 INSTALLED_APPS = [
+    'django_countries',
+    'django_select2',
+
     # allauth apps
     'allauth',
     'allauth.account',
@@ -54,6 +57,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'simple_history',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'iam.urls'

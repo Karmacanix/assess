@@ -35,8 +35,9 @@ fieldset.inlineLabels ul {list-style:none}
     {% if request.user.is_authenticated %}
       <a href="{% url 'assessment:application-request-list' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Requests</a>
     {% endif %}
-    {% if request.user|has_group:"security" or request.user|has_group:"privacy" %}
+    {% if request.user|has_group:"security" or request.user|has_group:"privacy" or request.user|has_group:"clinical" %}
       <a href="{% url 'assessment:application-assess-list' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Assess</a>
+      <a href="{% url 'assessment:governance-meetings' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Governance</a>
     {% endif %}
     <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Guides</a>
     <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Help</a>
@@ -56,8 +57,9 @@ fieldset.inlineLabels ul {list-style:none}
     {% if request.user.is_authenticated %}
       <a href="{% url 'assessment:application-request-list' %}" class="w3-bar-item w3-button w3-padding-large">Requests</a>
     {% endif %}
-    {% if request.user|has_group:"security" or request.user|has_group:"privacy" %}
-      <a href="{% url 'assessment:application-assess-list' %}" class="w3-bar-item w3-button w3-padding-large">Assess</a>    
+    {% if request.user|has_group:"security" or request.user|has_group:"privacy" or request.user|has_group:"clinical"%}
+      <a href="{% url 'assessment:application-assess-list' %}" class="w3-bar-item w3-button w3-padding-large">Assess</a>
+      <a href="{% url 'assessment:governance-meetings' %}" class="w3-bar-item w3-button w3-padding-large">Governance</a> 
     {% endif %}
     <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-padding-large">Guides</a>
     <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-padding-large">Help</a>
@@ -78,7 +80,7 @@ fieldset.inlineLabels ul {list-style:none}
 <!-- message -->
   {% if messages %}
   <div class="w3-panel w3-light-green">
-      <ul>
+      <ul class="w3-ul">
         {% for message in messages %}
           <li>{{message}}</li>
         {% endfor %}
@@ -92,9 +94,12 @@ fieldset.inlineLabels ul {list-style:none}
 </div>
 
 <!-- Footer -->
-<footer class="w3-container w3-padding-64 w3-center w3-opacity">  
+<footer class="w3-container w3-padding-16 w3-center w3-opacity">  
  <p>Powered by 3DHB</p>
 </footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
 {% block extra_body %}
 {% endblock %}
 

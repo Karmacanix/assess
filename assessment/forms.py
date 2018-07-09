@@ -1,21 +1,23 @@
 #from allauth.account.models import EmailAddress
 #from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+from django_select2.forms import Select2MultipleWidget
 from django import forms
-from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment #, PrivacyAssessment, NonFunctionals
+from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment
 
 class ApplicationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Application
-		fields = ['name', 'purpose', 'application_type', 'website', 'cost', 'cost_type', 'requestor', 'business_owner',]
+		fields = ['name', 'purpose', 'application_type', 'website', 'cost', 'cost_type', 'requestor', 'business_owner', 'dhbs']
 		widgets = {			
 			'name': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
 			'purpose': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
-			'cost_type': forms.Select(attrs={'class' : 'w3-select w3-border'}),
-			'requestor': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'cost_type': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'requestor': forms.Select(attrs={'class' : 'w3-select w3-border', 'empty_value' : 'Choose a business owner'}),
 			'business_owner': forms.Select(attrs={'class' : 'w3-select w3-border'}),
-			'application_type': forms.Select(attrs={'class' : 'w3-select w3-border'}),
+			'application_type': Select2MultipleWidget(attrs={'class' : 'w3-input w3-border', }),
+			'dhbs': Select2MultipleWidget(attrs={'class' : 'w3-input w3-border', }),
 			'cost': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
 			'website': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
 		}
@@ -40,7 +42,7 @@ class ApplicationSecurityDecisionForm(forms.ModelForm):
 			'security_comments',
 		]
 		widgets = {			
-			'security_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'security_decision': forms.RadioSelect(attrs={'class' : 'w3-option w3-border',}),
 			'security_comments': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
 		}
 
@@ -60,14 +62,16 @@ class ApplicationPrivacyDecisionForm(forms.ModelForm):
 
 
 class ApplicationClinicalDecisionForm(forms.ModelForm):
-	
+
 	class Meta:
 		model = Application
 		fields = [
 			'clinical_decision',
+			'clinical_comments',
 		]
 		widgets = {			
 			'clinical_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'clinical_comments': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
 		}
 
 
@@ -110,14 +114,14 @@ class ICTRiskAssessmentForm(forms.ModelForm):
  		widgets = {			
 			'termsconditions_URL': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
 			'privacypolicy_URL': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
-			'dhb_record_volume': forms.RadioSelect(),
-			'dhb_downtime_before_critical': forms.RadioSelect(),
-			'dhb_log_data_changes': forms.RadioSelect(),
-			'dhb_small_data_loss': forms.RadioSelect(),
-			'dhb_large_data_loss': forms.RadioSelect(),
-			'dhb_breach_plan': forms.RadioSelect(),
-			'dhb_disrupt_plan': forms.RadioSelect(),
-			'dhb_perm_loss': forms.RadioSelect(),
+			'dhb_record_volume': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'dhb_downtime_before_critical': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'dhb_log_data_changes': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'dhb_small_data_loss': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'dhb_large_data_loss': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'dhb_breach_plan': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'dhb_disrupt_plan': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'dhb_perm_loss': forms.RadioSelect(attrs={'class': 'w3-ul'}),
 		}
 		
 
@@ -129,50 +133,42 @@ class ICTVendorAssessmentForm(forms.ModelForm):
  		widgets = {
  			'host_country': forms.Select(attrs={'class' : 'w3-select w3-border'}),
  			'host_service': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
-			'host_deploy': forms.CheckboxSelectMultiple(),
-			'devices': forms.CheckboxSelectMultiple(),
-			'encrypt_transmit': forms.RadioSelect(),
-			'encrypt_stored': forms.RadioSelect(),
-			'anonimised': forms.RadioSelect(),
-			'back_up': forms.RadioSelect(),
-			'extract': forms.RadioSelect(),
-			'restore': forms.RadioSelect(),
-			'log_admin': forms.RadioSelect(),
-			'log_access': forms.RadioSelect(),
-			'shares_data': forms.RadioSelect(),
-			'notify_breach': forms.RadioSelect(),
-			'patches': forms.RadioSelect(),
-			'testing': forms.RadioSelect(),
-			'advise_legal_issues': forms.RadioSelect(),
-			'ownership': forms.RadioSelect(),
-			'penalty_breach': forms.RadioSelect(),
-			'penalty_outage': forms.RadioSelect(),
-			'report_outages': forms.RadioSelect(),
-			'backgroud_checks': forms.RadioSelect(),
+			'host_deploy': forms.CheckboxSelectMultiple(attrs={'class': 'w3-ul'}),
+			'devices': forms.CheckboxSelectMultiple(attrs={'class': 'w3-ul'}),
+			'encrypt_transmit': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'encrypt_stored': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'anonimised': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'back_up': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'extract': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'restore': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'log_admin': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'log_access': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'shares_data': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'notify_breach': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'patches': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'testing': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'advise_legal_issues': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'ownership': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'penalty_breach': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'penalty_outage': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'report_outages': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'backgroud_checks': forms.RadioSelect(attrs={'class': 'w3-ul'}),
 		}
 
 		# app, host_country,host_service, host_deploy, devices, encrypt_transmit, encrypt_stored, anonimised, back_up, extract, restore, 
 		# log_admin, log_access, shares_data, notify_breach, patches, testing, advise_legal_issues, ownership, penalty_breach, penalty_outage,
 		#  report_outages, backgroud_checks
 
-# class PrivacyAssessmentForm(forms.ModelForm):
+class PrivacyAssessmentForm(forms.ModelForm):
 	
-# 	class Meta:
-# 		model = PrivacyAssessment
-# 		fields = ['application_privacy_policy_URL']
+	class Meta:
+		model = PrivacyAssessment
+		fields = ['app','pia_upload']
 
 
-# class NonFunctionalsForm(forms.ModelForm):
-	
-# 	class Meta:
-# 		model = NonFunctionals
-# 		fields = ['application_terms_conditions_URL']
-		# widgets = {			
-		# 	'name': forms.TextInput(attrs={'class' : 'w3-input'}),
-		# 	'desc': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
-		# 	'status': forms.Select(attrs={'class' : 'w3-select'}),
-		# 	'billable': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
-		# 	'start_week': forms.TextInput(attrs={'type': 'week', 'class' : 'w3-input'}),
-		# 	'end_week': forms.TextInput(attrs={'type': 'week', 'class' : 'w3-input'}),
-		# 	'customer': forms.Select(attrs={'class' : 'w3-select'}),
-		# }
+class CATMeetingForm(forms.ModelForm):
+	pass
+
+
+class IPSGMeetingForm(forms.ModelForm):
+	pass

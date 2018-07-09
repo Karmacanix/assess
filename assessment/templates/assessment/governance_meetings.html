@@ -1,0 +1,24 @@
+{% extends "site-base.html" %}
+
+{% load static %}
+{% load account %}
+{% load i18n %}
+{% load assess_tags %}
+
+{% block head_title %}{% trans "Governance Meetings" %}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="w3-container w3-margin-top">
+  <header class="w3-black w3-opacity w3-padding-16">
+    <h1 class="w3-margin">Governance Meetings</h1>
+  </header>
+    <p>List of items that require governance</p>
+    <p>The list will be made up of items that have no CAT or ISPG decisions and are also not new or completed requested.</p> 
+    <p>CAT Meetings</p>
+    <p>IPSG Meetings</p>
+    <a class="w3-button w3-green w3-padding-large w3-large" href="#">Create CAT meeting</a>
+    <a class="w3-button w3-red w3-padding-large w3-large" href="#">Create IPSG meeting</a>
+    <br>
+  </div>
+{% endblock %}
