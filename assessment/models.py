@@ -263,14 +263,23 @@ class PrivacyAssessment(models.Model):
 
 
 class CATmeeting(models.Model):
-	# meeting_date
-	# attendees
-	# absentees
-	# meeting_location
-	# attach_mins
-	# decision - accept, reject, escalate
-	# list of apps and associated CAT decision
-	pass
+	meeting_time_date = models.DateTimeField(null=True, blank=True, verbose_name='Date and time:')
+	attendees = models.ManyToManyField(User, related_name='attendees')
+	absentees = models.ManyToManyField(User, related_name='absentees')
+	meeting_location = models.CharField(max_length=200, null=True, blank=True, verbose_name='Location:')
+	meeting_minutes =  models.FileField(null=True, blank=True, verbose_name='Attach meeting minutes:')
+
+
+class CATmeetingDecisions(models.Model):
+	DECISIONS = (
+		('A','Approve'), 
+		('R', 'Reject'),
+		('E', 'IPSG'),
+		('N', 'Noted'),
+	)
+	meeting = models.ForeignKey(CATmeeting, on_delete=models.CASCADE, related_name="catmeeting")
+	app = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application")
+	decision = models.CharField(max_length=1, choices=DECISIONS, null=True, blank=True, verbose_name='CAT decision:')
 
 
 class IPSGmeeting(models.Model):

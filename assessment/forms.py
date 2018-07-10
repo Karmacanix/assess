@@ -3,7 +3,7 @@
 from django_countries.fields import CountryField
 from django_select2.forms import Select2MultipleWidget
 from django import forms
-from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment
+from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment, CATmeeting, CATmeetingDecisions 
 
 class ApplicationForm(forms.ModelForm):
 	
@@ -166,8 +166,11 @@ class PrivacyAssessmentForm(forms.ModelForm):
 		fields = ['app','pia_upload']
 
 
-class CATMeetingForm(forms.ModelForm):
-	pass
+class CATmeetingForm(forms.ModelForm):
+
+	class Meta:
+		model = CATmeeting
+		fields = '__all__'
 
 
 class IPSGMeetingForm(forms.ModelForm):

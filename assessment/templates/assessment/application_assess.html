@@ -61,19 +61,16 @@
 
 {% if application.assess_status == "A" %}
 <h3>Approvals</h3>
-   
     <div class="w3-row w3-card-4">
       <form action="" method="POST">
         {% csrf_token %}
         {% for field in form %}
       <div class="w3-row w3-padding">
-        
           <div class="w3-col m3 l3">{{ field.label }}</div>
-          <div class="w3-col m3 l3">{{ field }}</div>
-        
+          <div class="w3-col m3 l3">{{ field }}</div>  
       </div>{% endfor %}
     </div>
-      <a class="w3-button w3-section w3-large w3-red w3-ripple" href="{% url 'assessment:application-assess-list' %}">{% trans "Cancel" %}</a>
+      <a class="w3-button w3-section w3-large w3-red w3-ripple" href="{% url 'assessment:application-list' %}">{% trans "Cancel" %}</a>
       <input class="w3-button w3-section w3-green w3-ripple w3-large" type="submit" value="Save" />
       </form>
 {% endif %}

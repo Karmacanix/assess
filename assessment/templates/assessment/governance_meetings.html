@@ -11,14 +11,59 @@
 <!-- Header -->
 <div class="w3-container w3-margin-top">
   <header class="w3-black w3-opacity w3-padding-16">
-    <h1 class="w3-margin">Governance Meetings</h1>
+    <h1 class="w3-margin">Governance Groups</h1>
   </header>
-    <p>List of items that require governance</p>
-    <p>The list will be made up of items that have no CAT or ISPG decisions and are also not new or completed requested.</p> 
-    <p>CAT Meetings</p>
-    <p>IPSG Meetings</p>
-    <a class="w3-button w3-green w3-padding-large w3-large" href="#">Create CAT meeting</a>
-    <a class="w3-button w3-red w3-padding-large w3-large" href="#">Create IPSG meeting</a>
-    <br>
-  </div>
+  <br>
+<!-- Applications ready for the CAT meeting -->
+{% if request.user|has_group:"privacy" or request.user|has_group:"clinical" or request.user|has_group:"security" %}
+{% if govern_list %}
+<h3>CAT Meetings</h3>
+<p>Applications ready for Cloud Assessment Team (CAT) consideration.</p>
+<table class="w3-table-all w3-hoverable w3-small w3-card-4">
+  <thead>
+    <tr class="w3-light-grey">
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Purpose" %}</th>
+      <th>{% trans "DHB(s)" %}</th>
+      <th class="w3-center">{% trans "App" %}<br>{% trans "Type(s)" %}</th>
+      <th class="w3-center">{% trans "ICT" %}<br>{% trans "Security" %}</th>
+      <th class="w3-center">{% trans "Privacy" %}<br>{% trans "Officer" %}</th>
+      <th class="w3-center">{% trans "Clinical" %}<br>{% trans "Advisor" %}</th>
+      <th class="w3-center">{% trans "Cloud" %}<br>{% trans "Assessment Team" %}</th>
+      <th class="w3-center">{% trans "Information Privacy" %} &<br>{% trans "Security Governance" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for application in govern_list %}
+    <tr>
+      <td><a class="w3-text-indigo" href="{% url 'assessment:catmeeting-detail' application.name %}">{{ application.name }}</a></td>
+      <td>{{ application.purpose }}</td>
+      <td>{% for dhb in application.dhbs.all %}
+        {{ dhb.name }}{% if forloop.last %}.{% else %},{% endif %}
+      {% endfor %}</td>
+      <td>{% for application_type in application.application_type.all %}
+        {% autoescape off %} {{ application_type.icon_html }}{% endautoescape %}{{ application_type.name }}
+      {% endfor %}</td>
+      <td class="{% if application.security_decision == 'N' %} w3-green{% elif application.security_decision == 'H' %} w3-red{% elif application.security_decision == 'E' %} w3-purple{% elif application.security_decision == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ application.get_security_decision_display }}</td>
+      <td class="{% if application.privacy_decision == 'N' %} w3-green{% elif application.privacy_decision == 'H' %} w3-red{% elif application.privacy_decision == 'E' %} w3-purple{% elif application.privacy_decision == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ application.get_privacy_decision_display }}</td>
+       <td class="{% if application.clinical_decision == 'N' %} w3-green{% elif application.clinical_decision == 'H'%} w3-red{% elif application.clinical_decision == 'E' %} w3-purple{% elif application.clinical_decision == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ application.get_clinical_decision_display }}</td>
+       <td>No CAT decision.</td>
+       <td>No SPSG decision.</td>
+     </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br>
+<h3>CAT Meeting List</h3>
+{% if catmeeting_list %}
+
+{% else %}
+
+{% endif %}
+
+<a class="w3-button w3-green w3-padding-large w3-large" href="{% url 'assessment:catmeeting-detail' %}">Create CAT meeting</a>
+{% endif %}
+{% endif %}
+<a class="w3-button w3-red w3-padding-large w3-large" href="#">Create IPSG meeting</a>
+</div>
 {% endblock %}

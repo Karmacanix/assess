@@ -404,14 +404,19 @@ class GovernanceMeetings(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(GovernanceMeetings, self).get_context_data(**kwargs)
-        context['govern_list'] = Application.objects.filter(assess_status='A')
+        context['govern_list'] = Application.objects.filter(
+                                    assess_status='A',
+                                    security_decision__isnull=False,
+                                    privacy_decision__isnull=False,
+                                    clinical_decision__isnull=False,
+                                )
         context['cat_list'] = Application.objects.filter(assess_status='A')
         context['ipsg_list'] = Application.objects.filter(assess_status='A')
         return context
 
 
 class CatMeetingDetailView(DetailView):
-    pass
+    model = CATmeeting
 
 
 class IPSGMeetingDetailView(DetailView):

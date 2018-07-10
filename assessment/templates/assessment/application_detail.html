@@ -26,7 +26,7 @@
         </li>
         <li><strong><small>Requestor:</small></strong>{% if application.requestor.first_name and application.requestor.last_name %} {{ application.requestor.first_name }} {{ application.requestor.last_name }}{% else %} {{ application.requester.username }}{% endif%}</li>
         <li><strong><small>Owner:</small></strong> {{ application.business_owner.first_name }} {{ application.business_owner.last_name }}</li>
-        <li><strong><small>DHBs:</small></strong>{% for dhb in application.dhbs.all %}
+        <li><strong><small>D<i class="fa fa-hospital-o fa-fw"></i>Bs:</small></strong>{% for dhb in application.dhbs.all %}
             {{ dhb.name }}{% if forloop.last %}.{% else %},{% endif %}
           {% endfor %}</li>
         <li><strong><small>Website:</small></strong><a class="w3-text-indigo" href='{{ application.website }}'> {{ application.website }}</a></li>
@@ -69,6 +69,23 @@
     </div>
   </div>
 <br>
+
+{% if application.assess_status == "A" %}
+  <h3>Risk Rating</h3>
+    <div class="w3-row w3-card-4">
+      <form action="" method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="w3-row w3-padding">
+            <div class="w3-col m3 l3">{{ field.label }}</div>
+            <div class="w3-col m3 l3">{{ field }}</div>
+          </div>
+        {% endfor %}
+      </form>
+      <a class="w3-button w3-section w3-large w3-red w3-ripple" href="{% url 'assessment:application-list' %}">{% trans "Cancel" %}</a>
+      <input class="w3-button w3-section w3-green w3-ripple w3-large" type="submit" value="Save" />
+    </div>
+{% endif %}
 
 {% if application.assess_status == 'R' or application.assess_status == 'P' %}
 <h3>Decisions</h3>
