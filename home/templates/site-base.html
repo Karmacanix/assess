@@ -37,7 +37,8 @@ fieldset.inlineLabels ul {list-style:none}
     {% endif %}
     {% if request.user|has_group:"security" or request.user|has_group:"privacy" or request.user|has_group:"clinical" %}
       <a href="{% url 'assessment:application-assess-list' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Assess</a>
-      <a href="{% url 'assessment:governance-meetings' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Governance</a>
+      <a href="{% url 'assessment:catmeeting-list' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">CAT</a>
+      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">IPSG</a>
     {% endif %}
     <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Guides</a>
     <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Help</a>
@@ -59,7 +60,8 @@ fieldset.inlineLabels ul {list-style:none}
     {% endif %}
     {% if request.user|has_group:"security" or request.user|has_group:"privacy" or request.user|has_group:"clinical"%}
       <a href="{% url 'assessment:application-assess-list' %}" class="w3-bar-item w3-button w3-padding-large">Assess</a>
-      <a href="{% url 'assessment:governance-meetings' %}" class="w3-bar-item w3-button w3-padding-large">Governance</a> 
+      <a href="{% url 'assessment:catmeeting-list' %}" class="w3-bar-item w3-button w3-padding-large">CAT</a> 
+      <a href="#" class="w3-bar-item w3-button w3-padding-large">IPSG</a>
     {% endif %}
     <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-padding-large">Guides</a>
     <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-padding-large">Help</a>

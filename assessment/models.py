@@ -1,6 +1,8 @@
+import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
 from django.utils.functional import curry
 from django_countries.fields import CountryField
 from simple_history.models import HistoricalRecords
@@ -18,6 +20,25 @@ class ApplicationType(models.Model):
 
 	def __str__(self):
 		return self.name
+
+
+class CATmeeting(models.Model):
+	meeting_date = models.DateField(default=datetime.date.today, verbose_name='Date:')
+	attendees = models.ManyToManyField(User, related_name='attendees')
+	meeting_location = models.CharField(max_length=200, null=True, blank=True, verbose_name='Location:')
+	meeting_minutes =  models.FileField(null=True, blank=True, verbose_name='Minutes:')
+	comments = models.CharField(max_length=254, null=True, blank=True)
+
+
+class IPSGmeeting(models.Model):
+	# meeting_date
+	# attendees
+	# absentees
+	# meeting_location
+	# attach_mins
+	# decision - accept, reject, escalate
+	# list of apps and associated IPSG decision
+	pass
 
 
 class Application(models.Model):
@@ -79,6 +100,11 @@ class Application(models.Model):
 		null=True,
 	)
 	clinical_comments = models.CharField(max_length=254, null=True, blank=True)
+	CATmeetingID = models.ForeignKey(CATmeeting, on_delete=models.CASCADE)
+	escalate_to_IPSG = models.BooleanField(default=False)
+	noted = models.BooleanField(default=False)
+	business_owner_approval = models.BooleanField(default=False)
+	business_owner_date = models.DateField(verbose_name='Submit Date')
 	attachments =  models.FileField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
@@ -261,33 +287,3 @@ class PrivacyAssessment(models.Model):
 	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
 	pia_upload = models.FileField(verbose_name='Upload completed Privacy Assessment')
 
-
-class CATmeeting(models.Model):
-	meeting_time_date = models.DateTimeField(null=True, blank=True, verbose_name='Date and time:')
-	attendees = models.ManyToManyField(User, related_name='attendees')
-	absentees = models.ManyToManyField(User, related_name='absentees')
-	meeting_location = models.CharField(max_length=200, null=True, blank=True, verbose_name='Location:')
-	meeting_minutes =  models.FileField(null=True, blank=True, verbose_name='Attach meeting minutes:')
-
-
-class CATmeetingDecisions(models.Model):
-	DECISIONS = (
-		('A','Approve'), 
-		('R', 'Reject'),
-		('E', 'IPSG'),
-		('N', 'Noted'),
-	)
-	meeting = models.ForeignKey(CATmeeting, on_delete=models.CASCADE, related_name="catmeeting")
-	app = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="application")
-	decision = models.CharField(max_length=1, choices=DECISIONS, null=True, blank=True, verbose_name='CAT decision:')
-
-
-class IPSGmeeting(models.Model):
-	# meeting_date
-	# attendees
-	# absentees
-	# meeting_location
-	# attach_mins
-	# decision - accept, reject, escalate
-	# list of apps and associated IPSG decision
-	pass

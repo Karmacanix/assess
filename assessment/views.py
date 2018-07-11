@@ -10,8 +10,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 
 # this app
-from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment, CATmeeting, IPSGmeeting
-from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm, ApplicationPrivacyDecisionForm, ApplicationClinicalDecisionForm, InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm, ICTVendorAssessmentForm, PrivacyAssessmentForm
+from .models import Application, InformationClassification, CloudQuestionnaire
+from .models import ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment
+from .models import CATmeeting, IPSGmeeting
+from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm
+from .forms import ApplicationPrivacyDecisionForm, ApplicationClinicalDecisionForm
+from .forms import InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm 
+from .forms import ICTVendorAssessmentForm, PrivacyAssessmentForm, CATmeetingForm
 
 # Create your views here.
 class ApplicationList(ListView):
@@ -398,25 +403,75 @@ class PrivacyAssessmentDelete(SuccessMessageMixin, DeleteView):
     success_message = "Privacy Assessment deleted!"
 
 
-class GovernanceMeetings(ListView):
-    model = Application
-    template_name="assessment/governance_meetings.html"
+# CAT MEETINGS
+class CatMeetingList(ListView):
+    model = CATmeeting
+    template_name="assessment/catmeeting_list.html"
 
     def get_context_data(self, **kwargs):
-        context = super(GovernanceMeetings, self).get_context_data(**kwargs)
-        context['govern_list'] = Application.objects.filter(
+        context = super(CatMeetingList, self).get_context_data(**kwargs)
+        context['ready_for_cat_list'] = Application.objects.filter(
                                     assess_status='A',
                                     security_decision__isnull=False,
                                     privacy_decision__isnull=False,
                                     clinical_decision__isnull=False,
                                 )
-        context['cat_list'] = Application.objects.filter(assess_status='A')
-        context['ipsg_list'] = Application.objects.filter(assess_status='A')
         return context
 
 
-class CatMeetingDetailView(DetailView):
+class CatMeetingDetail(DetailView):
     model = CATmeeting
+
+
+class CatMeetingCreate(SuccessMessageMixin, CreateView):
+    model = CATmeeting
+    form_class   = CATmeetingForm
+    success_message = 'CAT Meeting successfully saved!'
+    success_url = reverse_lazy('assessment:catmeeting-list')
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            form = CATmeetingForm(request.POST)
+            if form.is_valid():
+                print (form.cleaned_data['next'])
+
+                return HttpResponseRedirect('/thanks/')
+        
+        else:
+            form = CATmeetingForm()
+
+            return redirect('assessments:catmeeting-list')
+
+    def get_context_data(self, **kwargs):
+        context = super(CatMeetingCreate, self).get_context_data(**kwargs)
+        a = Application.objects.filter(assess_status='A', security_decision__isnull=False, privacy_decision__isnull=False, clinical_decision__isnull=False,)
+        context['ready_for_cat_list'] = a
+        context['tabled'] = a.count()
+        print("count:", a.count())
+        return context
+
+
+class CatMeetingUpdate(SuccessMessageMixin, UpdateView):
+    model = CATmeeting
+    form_class = CATmeetingForm
+    success_message = 'CAT Meeting successfully updated!'
+
+    def get_context_data(self, **kwargs):
+        context = super(CatMeetingUpdate, self).get_context_data(**kwargs)
+        a = Application.objects.filter(assess_status='A', security_decision__isnull=False, privacy_decision__isnull=False, clinical_decision__isnull=False,)
+        context['ready_for_cat_list'] = a
+        context['tabled'] = a.count()
+        print("count:", a.count())
+        return context
+
+    def get_success_url(self):
+        return reverse('assessment:catmeeting-detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class CatMeetingDelete(SuccessMessageMixin, DeleteView):
+    model = CATmeeting
+    success_url = reverse_lazy('assessment:catmeeting-list')
+    success_message = "CAT Meeting deleted!"
 
 
 class IPSGMeetingDetailView(DetailView):

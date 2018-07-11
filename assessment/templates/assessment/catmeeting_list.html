@@ -1,0 +1,53 @@
+{% extends "site-base.html" %}
+
+{% load static %}
+{% load account %}
+{% load i18n %}
+{% load assess_tags %}
+
+{% block head_title %}{% trans "Cloud Assessment Team Meetings" %}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="w3-container w3-margin-top">
+  <header class="w3-black w3-opacity w3-padding-16">
+    <h1 class="w3-margin">Cloud Assessment Team (CAT) Meetings</h1>
+  </header>
+  <br>
+<!-- Applications ready for the CAT meeting -->
+{% if request.user|has_group:"cloud_assessment_team" %}
+{% if catmeeting_list %}
+<h3>CAT Meetings</h3>
+<table class="w3-table-all w3-hoverable w3-padding w3-card-4">
+<thead>
+  <tr class="w3-light-grey">
+    <th>Date</th>
+    <th>Attendees</th>
+    <th>Location</th>
+    <th>Apps Noted</th>
+  </tr>
+</thead>
+<tbody>
+{% for meeting in catmeeting_list %}
+<tr>
+  <td><a href="{% url 'assessment:catmeeting-detail' meeting.id %}">{{ meeting.meeting_date }}</a></td>
+  <td>{% for attendees in meeting.attendees.all %}
+            {{ attendees }}{% if forloop.last %}.{% else %},{% endif %}
+          {% endfor %}</td>
+  <td>{{ meeting.meeting_location }}</td>
+  <td></td>
+</tr>
+{% endfor %}
+  </tbody>
+</table>
+<br>
+{% else %}
+<p>No CAT meetings to date. Please create one.</p>
+<br>
+{% endif %}
+
+<a class="w3-button w3-green w3-padding-large w3-large" href="{% url 'assessment:catmeeting-create' %}">Create CAT meeting</a>
+{% endif %}
+
+</div>
+{% endblock %}

@@ -1,9 +1,13 @@
 #from allauth.account.models import EmailAddress
 #from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 from django_select2.forms import Select2MultipleWidget
 from django import forms
-from .models import Application, InformationClassification, CloudQuestionnaire, ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment, CATmeeting, CATmeetingDecisions 
+from django.utils.safestring import mark_safe
+from .models import Application, InformationClassification, CloudQuestionnaire 
+from .models import	ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment
+from .models import CATmeeting
 
 class ApplicationForm(forms.ModelForm):
 	
@@ -167,10 +171,25 @@ class PrivacyAssessmentForm(forms.ModelForm):
 
 
 class CATmeetingForm(forms.ModelForm):
+	u = User.objects.filter(groups__name='cloud_assessment_team')
+	attendees = forms.ModelMultipleChoiceField(
+		queryset=u.distinct(), widget=Select2MultipleWidget(attrs={'class' : 'w3-input w3-border', }))
 
 	class Meta:
 		model = CATmeeting
-		fields = '__all__'
+		fields = ['id', 'meeting_date', 'attendees', 'meeting_location', 'meeting_minutes', 'comments',]# 'business_owner_date', 'escalate_to_IPSG', 'noted', 'CATmeetingID']
+		widgets = {			
+			'id': forms.NumberInput(attrs={'class' : 'w3-input w3-border'}),
+			'meeting_date': forms.DateInput(attrs={'class' : 'w3-input w3-border'}),
+			'attendees': Select2MultipleWidget(attrs={'class' : 'w3-input w3-border', }),
+			'meeting_location': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+			'meeting_minutes': forms.FileInput(attrs={'class' : 'w3-input w3-border'}),
+			'comments': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
+			# 'business_owner_date': forms.DateInput(attrs={'class' : 'w3-input w3-border'}),
+			# 'escalate_to_IPSG' : forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			# 'noted' : forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			# 'CATmeetingID' : forms.NumberInput(attrs={'class' : 'w3-input w3-border'}),
+		}
 
 
 class IPSGMeetingForm(forms.ModelForm):
