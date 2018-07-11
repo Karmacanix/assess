@@ -35,10 +35,11 @@ class ApplicationAssessList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationAssessList, self).get_context_data(**kwargs)
-        context['security_list'] = Application.objects.filter(assess_status='A', security_decision__isnull=False)
-        context['privacy_list'] = Application.objects.filter(assess_status='A', privacy_decision__isnull=False)
-        context['clinical_list'] = Application.objects.filter(assess_status='A', clinical_decision__isnull=False)
-        context['assessing_list'] = Application.objects.filter(assess_status='A')
+        a = Application.objects.filter(assess_status='A')
+        context['security_list'] = a
+        context['privacy_list'] = a
+        context['clinical_list'] = a
+        context['assessing_list'] = a
         return context
 
 
@@ -48,8 +49,11 @@ class ApplicationRequestList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationRequestList, self).get_context_data(**kwargs)
-        context['assessing_list'] = Application.objects.filter(assess_status='A')
-        context['new_list'] = Application.objects.filter(assess_status='N')
+        ro = self.request.user
+        context['reject_list'] = Application.objects.filter(assess_status='R', requestor=ro) | Application.objects.filter(assess_status='R', business_owner=ro)
+        context['approve_list'] = Application.objects.filter(assess_status='P', requestor=ro) | Application.objects.filter(assess_status='P', business_owner=ro)
+        context['assessing_list'] = Application.objects.filter(assess_status='A', requestor=ro) | Application.objects.filter(assess_status='A', business_owner=ro)
+        context['new_list'] = Application.objects.filter(assess_status='N', requestor=ro) | Application.objects.filter(assess_status='N', business_owner=ro)
         return context
 
 
@@ -59,6 +63,9 @@ class ApplicationDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ApplicationDetail, self).get_context_data(**kwargs)
         a = Application.objects.get(pk=self.kwargs['pk'])
+        context['security_form'] = ApplicationSecurityDecisionForm(instance=a)
+        context['privacy_form'] = ApplicationPrivacyDecisionForm(instance=a)
+        context['clinical_form'] = ApplicationClinicalDecisionForm(instance=a)
         if hasattr(a, 'informationclassification'):
             context['ic'] = True
         else:
@@ -254,12 +261,15 @@ class InformationClassificationCreate(SuccessMessageMixin, CreateView):
     model = InformationClassification
     form_class = InformationClassificationForm
     success_message = 'Information Classification successfully saved!'
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
 
     def get_initial(self):
         initial = super(InformationClassificationCreate, self).get_initial()
         initial['app'] = self.kwargs['pk']
         return initial
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class InformationClassificationUpdate(SuccessMessageMixin, UpdateView):
@@ -268,13 +278,16 @@ class InformationClassificationUpdate(SuccessMessageMixin, UpdateView):
     success_message = 'Information Classification successfully updated!'
 
     def get_success_url(self):
-        return reverse('assessment:informationclassification-detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class InformationClassificationDelete(SuccessMessageMixin, DeleteView):
     model = InformationClassification
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
     success_message = "Information Classification deleted!"
+    
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class CloudQuestionnaireDetail(DetailView):
@@ -285,12 +298,15 @@ class CloudQuestionnaireCreate(SuccessMessageMixin, CreateView):
     model = CloudQuestionnaire
     form_class = CloudQuestionnaireForm
     success_message = 'Cloud Questionnaire successfully saved!'
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
 
     def get_initial(self):
         initial = super(CloudQuestionnaireCreate, self).get_initial()
         initial['app'] = self.kwargs['pk']
         return initial
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class CloudQuestionnaireUpdate(SuccessMessageMixin, UpdateView):
@@ -299,14 +315,16 @@ class CloudQuestionnaireUpdate(SuccessMessageMixin, UpdateView):
     success_message = 'Cloud Questionnaire successfully updated!'
 
     def get_success_url(self):
-        return reverse('assessment:cloudquestionnaire-detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class CloudQuestionnaireDelete(SuccessMessageMixin, DeleteView):
     model = CloudQuestionnaire
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
     success_message = "Cloud Questionnaire deleted!"
 
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 #ICTRiskAssessment
 class ICTRiskAssessmentDetail(DetailView):
@@ -317,12 +335,15 @@ class ICTRiskAssessmentCreate(SuccessMessageMixin, CreateView):
     model = ICTRiskAssessment
     form_class = ICTRiskAssessmentForm
     success_message = 'ICT Risk Assessment successfully saved!'
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
 
     def get_initial(self):
         initial = super(ICTRiskAssessmentCreate, self).get_initial()
         initial['app'] = self.kwargs['pk']
         return initial
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class ICTRiskAssessmentUpdate(SuccessMessageMixin, UpdateView):
@@ -331,13 +352,16 @@ class ICTRiskAssessmentUpdate(SuccessMessageMixin, UpdateView):
     success_message = 'ICT Risk Assessment successfully updated!'
 
     def get_success_url(self):
-        return reverse('assessment:ictriskassessment-detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class ICTRiskAssessmentDelete(SuccessMessageMixin, DeleteView):
     model = ICTRiskAssessment
-    success_url = reverse_lazy('assessment:application-list')
+    # success_url = reverse_lazy('assessment:application-list')
     success_message = "ICT Risk Assessment deleted!"
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 #ICTVendorAssessment
 class ICTVendorAssessmentDetail(DetailView):
@@ -348,12 +372,15 @@ class ICTVendorAssessmentCreate(SuccessMessageMixin, CreateView):
     model = ICTVendorAssessment
     form_class = ICTVendorAssessmentForm
     success_message = 'ICT Vendor Assessment successfully saved!'
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
 
     def get_initial(self):
         initial = super(ICTVendorAssessmentCreate, self).get_initial()
         initial['app'] = self.kwargs['pk']
         return initial
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class ICTVendorAssessmentUpdate(SuccessMessageMixin, UpdateView):
@@ -362,13 +389,16 @@ class ICTVendorAssessmentUpdate(SuccessMessageMixin, UpdateView):
     success_message = 'ICT Vendor Assessment successfully updated!'
 
     def get_success_url(self):
-        return reverse('assessment:ictvendorassessment-detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class ICTVendorAssessmentDelete(SuccessMessageMixin, DeleteView):
     model = ICTVendorAssessment
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
     success_message = "ICT Vendor Assessment deleted!"
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 # PRIVACY ASSESSMENT
@@ -380,12 +410,15 @@ class PrivacyAssessmentCreate(SuccessMessageMixin, CreateView):
     model = PrivacyAssessment
     form_class = PrivacyAssessmentForm
     success_message = 'Privacy Assessment successfully saved!'
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
 
     def get_initial(self):
         initial = super(PrivacyAssessmentCreate, self).get_initial()
         initial['app'] = self.kwargs['pk']
         return initial
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class PrivacyAssessmentUpdate(SuccessMessageMixin, UpdateView):
@@ -394,13 +427,16 @@ class PrivacyAssessmentUpdate(SuccessMessageMixin, UpdateView):
     success_message = 'Privacy Assessment successfully updated!'
 
     def get_success_url(self):
-        return reverse('assessment:privacyassessment-detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class PrivacyAssessmentDelete(SuccessMessageMixin, DeleteView):
     model = PrivacyAssessment
-    success_url = reverse_lazy('assessment:application-list')
+    #success_url = reverse_lazy('assessment:application-list')
     success_message = "Privacy Assessment deleted!"
+
+    def get_success_url(self):
+        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 # CAT MEETINGS

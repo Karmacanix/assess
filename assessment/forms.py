@@ -46,7 +46,7 @@ class ApplicationSecurityDecisionForm(forms.ModelForm):
 			'security_comments',
 		]
 		widgets = {			
-			'security_decision': forms.RadioSelect(attrs={'class' : 'w3-option w3-border',}),
+			'security_decision': forms.RadioSelect(attrs={'class' : 'w3-ul',}),
 			'security_comments': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
 		}
 
@@ -167,7 +167,7 @@ class PrivacyAssessmentForm(forms.ModelForm):
 	
 	class Meta:
 		model = PrivacyAssessment
-		fields = ['app','pia_upload']
+		fields = '__all__'
 
 
 class CATmeetingForm(forms.ModelForm):

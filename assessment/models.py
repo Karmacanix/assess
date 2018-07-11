@@ -100,11 +100,11 @@ class Application(models.Model):
 		null=True,
 	)
 	clinical_comments = models.CharField(max_length=254, null=True, blank=True)
-	CATmeetingID = models.ForeignKey(CATmeeting, on_delete=models.CASCADE)
+	CATmeetingID = models.ForeignKey(CATmeeting, on_delete=models.SET_NULL, null=True, blank=True)
 	escalate_to_IPSG = models.BooleanField(default=False)
 	noted = models.BooleanField(default=False)
 	business_owner_approval = models.BooleanField(default=False)
-	business_owner_date = models.DateField(verbose_name='Submit Date')
+	business_owner_date = models.DateField(verbose_name='Submit Date', null=True, blank=True)
 	attachments =  models.FileField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
@@ -286,4 +286,5 @@ class ICTVendorAssessment(models.Model):
 class PrivacyAssessment(models.Model):
 	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
 	pia_upload = models.FileField(verbose_name='Upload completed Privacy Assessment')
+	disclaimer = models.BooleanField(default=False)
 

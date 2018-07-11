@@ -5,62 +5,31 @@
 {% load i18n %}
 {% load assess_tags %}
 
-{% block head_title %}{% trans "Application Assessment Decision" %}{% endblock %}
+{% block head_title %}{% trans "Assess Risk" %}{% endblock %}
 
 {% block content %}
 <!-- Header -->
 <div class="w3-container w3-margin-top">
   <header class="w3-black w3-opacity w3-padding-16">
-    <h1 class="w3-margin">Application Assessment Decision</h1>
+    <h1 class="w3-margin">Assess Risk</h1>
   </header>
   <br>
-  <h3>Application Details</h3>
   <div class="w3-container w3-card-4">
-  
-   <div class="w3-row">
-      <div class="w3-col m2 l2">
-        <p><strong>Name:</strong></p>
-        <p><strong>Purpose:</strong></p>
-        <p><strong>Type:</strong></p>
-        <p><strong>Requestor:</strong></p>
-        <p><strong>Business Owner:</strong></p>
-        <p><strong>Website:</strong></p>
-        <p><strong>Cost:</strong></p>
-      </div>
-      <div class="w3-col m4 l4">  
-        <p>{{ application.name }}</p>
-        <p>{{ application.purpose }}</p>
-        <p>{{ application.get_application_type_display }}</p>
-        <p>{{ application.requestor.first_name }} {{ application.requestor.last_name }}</p>
-        <p>{{ application.business_owner.first_name }} {{ application.business_owner.last_name }}</p>
-        <p><a class="w3-text-indigo" href='{{ application.website }}'>{{ application.website }}</a></p>
-        <p>${{ application.cost }} {{ application.get_cost_type_display }}</p>
-      </div>
+    <ul class="w3-ul">
+        <li><strong><small>Application:</small></strong><a href="{% url 'assessment:application-detail' application.name %}">{{ application.name }}</a></li>
+        <li><strong><small>Purpose:</small></strong> {{ application.purpose }}</li>
+        <li><strong><small>Suitable for:</small></strong>
+          {% for application_type in application.application_type.all %}
+            {% autoescape off %} {{ application_type.icon_html }}{% endautoescape %}{{ application_type.name }}
+          {% endfor %}
+        </li>
+      </ul>
     </div>
-   </div>
-<br>
-<h3>Assessments</h3>
-  <div class="w3-row">
-      <ul class="w3-ul w3-card-4">
-        {% if ic %}  
-          <li><span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span><a href="{% url 'assessment:informationclassification-detail' application.name %}">{% trans "View Information Classification" %}</a></li>
-        {% else %}
-          <li><span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-1x"></i></span><a href="{% url 'assessment:informationclassification-create' application.name %}">{% trans "Start Information Classification" %}</a></li>
-        {% endif %}
-        {% if cl %}  
-          <li><span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span><a href="{% url 'assessment:cloudquestionnaire-detail' application.name %}">{% trans "View Cloud Questionnaire" %}</a></li>
-        {% else %}
-          <li><span class='w3-text-red'><i class="fa fa-times-circle fa-fw fa-1x"></i></span><a href="{% url 'assessment:cloudquestionnaire-create' application.name %}">{% trans "Start Cloud Questionnaire" %}</a></li>
-        {% endif %}
-        {% if bc %}  
-          <li><span class='w3-text-green'><i class="fa fa-check-circle fa-fw"></i></span><a href="{% url 'assessment:ictriskassessment-detail' application.name %}">{% trans "View ICT Risk Assessment" %}</a></li>
-        {% else %}
-        {% endif %}
-    </div>
-<br>
+    <br>
 
 {% if application.assess_status == "A" %}
-<h3>Approvals</h3>
+{% if request.user|has_group:"security" or request.user|has_group:"privacy" or request.user|has_group:"clinical" %}
+<h3>Risk Rating</h3>
     <div class="w3-row w3-card-4">
       <form action="" method="POST">
         {% csrf_token %}
@@ -70,9 +39,10 @@
           <div class="w3-col m3 l3">{{ field }}</div>  
       </div>{% endfor %}
     </div>
-      <a class="w3-button w3-section w3-large w3-red w3-ripple" href="{% url 'assessment:application-list' %}">{% trans "Cancel" %}</a>
+      <a class="w3-button w3-section w3-large w3-red w3-ripple" href="{% url 'assessment:application-assess-list' %}">{% trans "Cancel" %}</a>
       <input class="w3-button w3-section w3-green w3-ripple w3-large" type="submit" value="Save" />
       </form>
+{% endif %}
 {% endif %}
 </div>
 

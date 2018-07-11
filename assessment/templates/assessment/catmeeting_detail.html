@@ -25,41 +25,5 @@
     </ul>
    </div>
   <br>
-
-  {% if catmeetingdecision %}
-  <h3>Decisions</h3>
-  <div class="w3-container w3-card-4"><br>
-    <div class="w3-row w3-padding w3-border">
-      <div class="w3-col m2 l2">App</div>
-      <div class="w3-col m2 l2">Decision</div>
-      <div class="w3-col m2 l2">Edit</div>
-    </div>
-    {% if catmeetingdecision %}
-    {% for application in catmeetingdecision %}
-    <div class="w3-row w3-padding w3-border">
-      <div class="w3-col m2 l2">{{ application.app }}</div>
-      <div class="w3-col m2 l2">{{ application.decision }}</div>
-      <div class="w3-col m2 l2"><a class="w3-button w3-section w3-small large w3-blue w3-ripple" href="#">Save</a></div>
-    </div>
-    {% endfor %}
-    {% else %}
-      <p>No special apps available.</p>
-    {% endif %}
-  </div>
-  <br>
-<!-- bottom navigation -->
-<div class="w3-row">
-  <a class="w3-button w3-section w3-large w3-red w3-ripple" href="#">Back to list</a>
-  <a class="w3-button w3-section w3-large w3-blue w3-ripple" href="#">Add app to meeting</a>
-  <a class="w3-button w3-section w3-large w3-green w3-ripple" href="#">Save</a>
-</div>
-{% else %}
-  <p>No CAT Meetings.</p>
 {% endif %}
-
-</div>
-CATmeeting, meeting_time_date, attendees, absentees, meeting_location, meeting_minutes,
-
-CATmeetingdDecisions, meeting, app, decision
-
 {% endblock %}
