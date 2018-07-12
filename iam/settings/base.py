@@ -27,6 +27,10 @@ INSTALLED_APPS = [
     'django_select2',
     'simple_history',
     'taggit',
+
+    #me
+    'home',
+    'assessment',
 ]
 
 MIDDLEWARE = [
@@ -40,9 +44,9 @@ MIDDLEWARE = [
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
-ROOT_URLCONF = 'mysite.urls'
+ROOT_URLCONF = 'iam.urls'
 
-WSGI_APPLICATION = 'mysite.wsgi.application'
+WSGI_APPLICATION = 'iam.wsgi.application'
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
