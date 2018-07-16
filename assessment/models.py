@@ -62,6 +62,7 @@ class Application(models.Model):
 	application_type = models.ManyToManyField(ApplicationType)
 	ASSESSMENT_STATUS = (
 		('N', 'New'),
+		('S', 'Submitted'),
 		('A', 'Assessing'),
 		('R', 'Rejected'),
 		('P', 'Approved'),
