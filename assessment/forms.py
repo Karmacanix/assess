@@ -168,6 +168,33 @@ class PrivacyAssessmentForm(forms.ModelForm):
 	class Meta:
 		model = PrivacyAssessment
 		fields = '__all__'
+		widgets = {
+ 			'desc': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
+			'personal_info': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
+			'substantial_change': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'risk_register': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'collection': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'new_collect': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'new_store': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'new_sensitive': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'offshore': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'disclosure': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'sharing': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'policy': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'new_id': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'monitoring': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'premises': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'regulatory': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'info_handling': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'sensitivity': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'significance': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'interaction': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+			'public_impact': forms.RadioSelect(attrs={'class': 'w3-ul'}),
+		}
+# char: app, desc, 
+# boolean: personal_info, substantial_change, risk_register, collection, new_collect, new_store, 
+# new_sensitive, offshore, disclosure, sharing, policy, new_id, monitoring, premises, regulatory
+# choice: info_handling, sensitivity, significance, interaction, public_impact
 
 
 class CATmeetingForm(forms.ModelForm):

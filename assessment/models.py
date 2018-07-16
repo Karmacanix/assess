@@ -284,7 +284,75 @@ class ICTVendorAssessment(models.Model):
 
 
 class PrivacyAssessment(models.Model):
+	LEVELS = (
+			('H', 'High'),
+			('M', 'Medium'),
+			('L', 'Low'),
+	)
 	app = models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True)
-	pia_upload = models.FileField(verbose_name='Upload completed Privacy Assessment')
-	disclaimer = models.BooleanField(default=False)
+	desc = models.CharField(blank=True, null=True, max_length=255, verbose_name='Brief description of the project', 
+		help_text='Describe your existing systems and the main changes that are proposed. Describe the purpose of the change, including any projected benefits to your organisation or to the individuals affected. Identify the main stakeholders or entities involved, and their role in the project.')
+	personal_info = models.CharField(blank=True, null=True, max_length=255, verbose_name='Personal information that the project will involve', 
+		help_text='A description of the personal information that will be collected, used and/or disclosed; the source of the information; and the purpose of the information for your project.')
+	substantial_change = models.BooleanField(default=False, verbose_name='A substantial change to an existing policy, process or system that involves personal information', 
+		help_text='Example: New legislation or policy that makes it compulsory to collect or disclose information')
+	risk_register = models.BooleanField(default=False, verbose_name='Any practice or activity that is listed on a risk register kept by your organisation', 
+		help_text='Example: Practices or activities listed on your office’s privacy risk register or health and safety register')
+	collection = models.BooleanField(default=False, verbose_name='A new collection of personal information', 
+		help_text='Example: Collecting information about individuals’ location')
+	new_collect = models.BooleanField(default=False, verbose_name='A new way of collecting personal information', 
+		help_text='Example: Collecting information online rather than on paper forms')
+	new_store = models.BooleanField(default=False, verbose_name='A change in the way personal information is stored or secured', 
+		help_text='Example: Storing information in the cloud')
+	new_sensitive = models.BooleanField(default=False, verbose_name='A change to how sensitive information is managed', 
+		help_text='Example: Moving health or financial records to a new database')
+	offshore = models.BooleanField(default=False, verbose_name='Transferring personal information offshore or using a third-party contractor', 
+		help_text='Example: Outsourcing the payroll function or storing information in the cloud')
+	disclosure = models.BooleanField(default=False, verbose_name='A new use or disclosure of personal information that is already held', 
+		help_text='Example: Sharing information with other parties in a new way')
+	sharing = models.BooleanField(default=False, verbose_name='Sharing or matching personal information held by different organisations or currently held in different datasets', 
+		help_text='Example: Combining information with other information held on public registers, or sharing information to enable organisations to provide services jointly')
+	policy = models.BooleanField(default=False, verbose_name='A change in policy that results in people having less access to information that you hold about them', 
+		help_text='Example: Archiving documents into a facility from which they can’t be easily retrieved')
+	new_id = models.BooleanField(default=False, verbose_name='Establishing a new way of identifying individuals', 
+		help_text='Example: A unique identifier, a biometric, or an online identity system')
+	monitoring = models.BooleanField(default=False, verbose_name='Surveillance, tracking or monitoring of movements, behaviour or communications', 
+		help_text='Example: Installing a new CCTV system')
+	premises = models.BooleanField(default=False, verbose_name='Changes to your premises that will involve private spaces where clients or customers may disclose their personal information ', 
+		help_text='Example: Changing the location of the reception desk, meeting rooms  where people may discuss personal details')
+	regulatory = models.BooleanField(default=False, verbose_name='New regulatory requirements that could lead to compliance action against individuals on the basis of information about them ', 
+		help_text='Example: Adding a new medical condition to the requirements of a pilot’s license')
+	info_handling = models.CharField(max_length=1, choices=LEVELS, default='L', verbose_name='Level of information handling',
+		help_text="Amount of personal information that will be handled.")
+	sensitivity = models.CharField(max_length=1, choices=LEVELS, default='L', verbose_name='Sensitivity of the information', 
+		help_text="Amount of sensitive information that will be handled.")
+	significance = models.CharField(max_length=1, choices=LEVELS, default='L', verbose_name='Significance of the changes',
+		help_text="Magnitude of change.")
+	interaction = models.CharField(max_length=1, choices=LEVELS, default='L', verbose_name='Interaction with others',
+		help_text="Number of other organisations involved.")
+	public_impact = models.CharField(max_length=1, choices=LEVELS, default='L', verbose_name='Public impact',
+		help_text="Impact on clients and the wider public. Concerns over aspects of project; or potential for negative media.")
 
+
+	def _get_help_text(self, field_name):
+
+		for field in self._meta.fields:
+			if field.name == field_name:
+				return field.help_text
+	
+	def _get_verbose_name(self, field_name):
+
+		for field in self._meta.fields:
+			if field.name == field_name:
+				return field.verbose_name
+
+	def __init__(self, *args, **kwargs):
+		super(PrivacyAssessment, self).__init__(*args, **kwargs)
+
+		for field in self._meta.fields:
+			method_name = "get_{0}_help_text".format(field.name)
+			curried_method = curry(self._get_help_text, field_name=field.name)
+			setattr(self, method_name, curried_method)
+			method_v_name = "get_{0}_verbose_name".format(field.name)
+			curried_v_method = curry(self._get_verbose_name, field_name=field.name)
+			setattr(self, method_v_name, curried_v_method)

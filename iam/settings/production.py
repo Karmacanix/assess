@@ -14,8 +14,6 @@ ANYMAIL = {
     "MAILGUN_API_KEY": config('MAILGUN_API_KEY'),
 }
 
-EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
-
 DEFAULT_FROM_EMAIL = 'david.rigby@ccdhb.org.nz'
 # EMAIL_HOST = 'smtp.mailgun.org'
 # EMAIL_PORT = 587

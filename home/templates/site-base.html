@@ -42,7 +42,7 @@ fieldset.inlineLabels ul {list-style:none}
     {% endif %}
     <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Guides</a>
     <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Help</a>
-    {% if request.user.is_superuser %}
+    {% if request.user.is_staff %}
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Admin</a>
     {% endif %}
     {% if user.is_authenticated %}
@@ -65,7 +65,7 @@ fieldset.inlineLabels ul {list-style:none}
     {% endif %}
     <a href="{% url 'guides' %}" class="w3-bar-item w3-button w3-padding-large">Guides</a>
     <a href="{% url 'help' %}" class="w3-bar-item w3-button w3-padding-large">Help</a>
-    {% if request.user.is_superuser %}
+    {% if request.user.is_staff %}
       <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-padding-large">Admin</a>
     {% endif %}
     {% if user.is_authenticated %}

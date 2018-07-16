@@ -19,18 +19,14 @@
 {% endif %}
 <form class="w3-container w3-card-4" action="" method="post">
    {% csrf_token %}
-      <div class="w3-row">
-         <br/>
-    <p>1. Download a blank copy of the privacy assessment here: <a href="{% static 'Brief Privacy Analysis template.docx' %}" download>Brief Privacy Analysis template.docx</a></p> 
-    <p>2. Complete it and then upload it to the field below.</p>
-        </div>
       {% for field in form %}
           {% if field == form.app %}
             <span hidden>{{ field }}</span>
           {% else %}
           <div class="w3-row w3-padding w3-border">
-            <div class="w3-col m6 l6 w3-padding">{{field.label}}</div>
-            <div class="w3-col m6 l6 w3-padding">{{field}}</div>
+            <div class="w3-col m4 l4 w3-padding">{{field.label}}</div>
+            <div class="w3-col m4 l4 w3-padding">{{field.help_text}}</div>
+            <div class="w3-col m4 l4 w3-padding">{{field}}</div>
           </div>
           {% endif %}
         {% endfor %}

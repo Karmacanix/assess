@@ -99,6 +99,7 @@ class ApplicationSecurityAssess(SuccessMessageMixin, UpdateView):
     form_class = ApplicationSecurityDecisionForm
     template_name = "assessment/application_assess.html"
     success_message = 'Application ICT security assessment decision successfully updated!'
+    success_url = reverse_lazy('assessment:application-assess-list')
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationSecurityAssess, self).get_context_data(**kwargs)
@@ -131,15 +132,13 @@ class ApplicationSecurityAssess(SuccessMessageMixin, UpdateView):
 
         return context
 
-    def get_success_url(self):
-        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
-
 
 class ApplicationPrivacyAssess(SuccessMessageMixin, UpdateView):
     model = Application
     form_class = ApplicationPrivacyDecisionForm
     template_name = "assessment/application_assess.html"
     success_message = 'Application privacy assessment decision successfully updated!'
+    success_url = reverse_lazy('assessment:application-assess-list')
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationPrivacyAssess, self).get_context_data(**kwargs)
@@ -172,15 +171,13 @@ class ApplicationPrivacyAssess(SuccessMessageMixin, UpdateView):
 
         return context
 
-    def get_success_url(self):
-        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
-
 
 class ApplicationClinicalAssess(SuccessMessageMixin, UpdateView):
     model = Application
     form_class = ApplicationClinicalDecisionForm
     template_name = "assessment/application_assess.html"
     success_message = 'Clinical Advisor decision successfully updated!'
+    success_url = reverse_lazy('assessment:application-assess-list')
 
     def get_context_data(self, **kwargs):
         context = super(ApplicationClinicalAssess, self).get_context_data(**kwargs)
@@ -212,9 +209,6 @@ class ApplicationClinicalAssess(SuccessMessageMixin, UpdateView):
             context['pa'] = False
 
         return context
-
-    def get_success_url(self):
-        return reverse('assessment:application-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class ApplicationCreate(SuccessMessageMixin, CreateView):
