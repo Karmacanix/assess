@@ -2,14 +2,16 @@ from .base import *
 
 from decouple import config
 
-DEBUG = True
+DEBUG = False
 
 SECRET_KEY = config('SECRET_KEY')
 
 ALLOWED_HOSTS = ['thawing-ocean-69787.herokuapp.com', ]
 
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+
 ANYMAIL = {
-    "MAILGUN_API_KEY": "a4c8297ba9e8d5b02c2f229cff530574-8b7bf2f1-3e430b47",
+    "MAILGUN_API_KEY": config('MAILGUN_API_KEY'),
 }
 
 EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'

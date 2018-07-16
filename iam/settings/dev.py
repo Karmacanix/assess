@@ -8,6 +8,16 @@ ALLOWED_HOSTS = []
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+DEFAULT_FROM_EMAIL = 'david.rigby@ccdhb.org.nz'
+# EMAIL_HOST = 'smtp.mailgun.org'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+# EMAIL_USE_TLS = True
+
+
+    # django.db.backends.postgresql_psycopg2
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
