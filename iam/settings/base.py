@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django_select2',
     'simple_history',
     'taggit',
+    'anymail',
 
     #me
     'home',
