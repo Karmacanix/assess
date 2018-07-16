@@ -28,7 +28,7 @@ def help(request):
         	comments = form.cleaned_data['comments']
         	name = form.cleaned_data['name']
         	message = name + ": " + email_from + ": " + comments
-        	sender = 'dhrigby@gmail.com'
+        	sender = 'postmaster@sandbox8029a5fdef2d45a789df5dc1c3af2f14.mailgun.org'
         	recipients = ['dhrigby@gmail.com']
         	subject = 'App Acreditation Service Help Request'
         	send_mail(subject, message, sender, recipients)
