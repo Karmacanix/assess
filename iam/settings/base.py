@@ -3,9 +3,8 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-from decouple import config
-
-#SECRET_KEY = config('SECRET_KEY')
+print("base dir:", BASE_DIR)
+print("project dir:", PROJECT_ROOT)
 
 INSTALLED_APPS = [
     # allauth apps
