@@ -2,6 +2,8 @@ from .base import *
 
 DEBUG = False
 
+SECRET_KEY = config('SECRET_KEY')
+
 ALLOWED_HOSTS = ['thawing-ocean-69787.herokuapp.com', ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
