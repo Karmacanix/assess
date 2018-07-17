@@ -33,38 +33,33 @@
       <thead>
         <tr class="w3-light-grey">
           <th>{% trans "Name" %}</th>
-          <th>{% trans "Requestor" %}</th>
-          <th>{% trans "Business Owner" %}</th>
-          <th>{% trans "DHB(s)" %}</th>
-          <th>{% trans "Submitted on" %}</th>
-          <th>{% trans "Approve / Reject" %}</th>
-          <th>{% trans "Noted" %}</th>
+          <th>{% trans "Purpose" %}</th>
+          <th>{% trans "Security Risk" %}</th>
+          <th>{% trans "Privacy Risk" %}</th>
+          <th>{% trans "Clinical Risk" %}</th>
+          <th>{% trans "CAT" %}</th>
           <th>{% trans "Escalate to IPSG" %}</th>
-          <th>{% trans "Next CAT meeting" %}</th>
+          <th>{% trans "Noted" %}</th>
+          <th>{% trans "Decision" %}</th>
         </tr>
       </thead>
       <tbody>
-        {% for application in ready_for_cat_list %}
+        <form method="post">
+          {{ formset.management_form }}
+        {% for frm in formset %}
         <tr>
-          <td><a class="w3-text-indigo" href="{% url 'assessment:application-detail' application.name %}">{{ application.name }}</a></td>
-          <td>{{ application.requestor }}</td>
-          <td>{{ application.business_owner }}</td>
-          <td>{% for dhb in application.dhbs.all %}
-            {{ dhb.name }}{% if forloop.last %}.{% else %},{% endif %}
-          {% endfor %}</td>
-          <td>{{ business_owner_date }}</td>
-          <td>
-            <select class="w3-select w3-border" id="CATdecision" name="option">
-              <option value="" disabled selected>Choose your option</option>
-              <option value="1">Approve</option>
-              <option value="2">Reject</option>
-            </select>
-          </td>
-          <td><input class="w3-check" type="checkbox" id="noted"></td>
-          <td><input class="w3-check" type="checkbox" id="escalate"></td>
-          <td><input class="w3-check" type="checkbox" id="next"></td>
+          <td>{{ frm.name.value}}</td>
+          <td>{{ frm.purpose.value}}</td>
+          <td class="{% if frm.security_decision.value == 'N' %} w3-green{% elif frm.security_decision.value == 'H' %} w3-red{% elif frm.security_decision.value == 'E' %} w3-purple{% elif frm.security_decision.value == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ frm.instance.get_security_decision_display }}</td>
+          <td class="{% if frm.privacy_decision.value == 'N' %} w3-green{% elif frm.privacy_decision.value == 'H' %} w3-red{% elif frm.privacy_decision.value == 'E' %} w3-purple{% elif frm.privacy_decision.value == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ frm.instance.get_privacy_decision_display }}</td>
+          <td class="{% if frm.clinical_decision.value == 'N' %} w3-green{% elif frm.clinical_decision.value == 'H' %} w3-red{% elif frm.clinical_decision.value == 'E' %} w3-purple{% elif frm.clinical_decision.value == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ frm.instance.get_clinical_decision_display }}</td>
+          <td>{{ frm.CATmeetingCode.value|default_if_none:form.meeting_code.value }}</td>
+          <td>{{ frm.escalate_to_IPSG }}</td>
+          <td>{{ frm.noted }}</td>
+          <td>{{ frm.assess_status }}</td>
          </tr>
         {% endfor %}
+      </form>
       </tbody>
     </table>
   {% else %}

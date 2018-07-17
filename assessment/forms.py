@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 from django_select2.forms import Select2MultipleWidget
 from django import forms
+from django.forms import modelformset_factory
 from django.utils.safestring import mark_safe
 from .models import Application, InformationClassification, CloudQuestionnaire 
 from .models import	ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment
@@ -204,19 +205,45 @@ class CATmeetingForm(forms.ModelForm):
 
 	class Meta:
 		model = CATmeeting
-		fields = ['id', 'meeting_date', 'attendees', 'meeting_location', 'meeting_minutes', 'comments',]# 'business_owner_date', 'escalate_to_IPSG', 'noted', 'CATmeetingID']
+		fields = ['meeting_code', 'meeting_date', 'attendees', 'meeting_location', 'comments',]# 'business_owner_date', 'escalate_to_IPSG', 'noted', 'CATmeetingID']
 		widgets = {			
-			'id': forms.NumberInput(attrs={'class' : 'w3-input w3-border'}),
+			'meeting_code': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
 			'meeting_date': forms.DateInput(attrs={'class' : 'w3-input w3-border'}),
 			'attendees': Select2MultipleWidget(attrs={'class' : 'w3-input w3-border', }),
 			'meeting_location': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
-			'meeting_minutes': forms.FileInput(attrs={'class' : 'w3-input w3-border'}),
 			'comments': forms.Textarea(attrs={'class' : 'w3-input w3-border', 'cols': '40', 'rows': '3'}),
 			# 'business_owner_date': forms.DateInput(attrs={'class' : 'w3-input w3-border'}),
 			# 'escalate_to_IPSG' : forms.CheckboxInput(attrs={'class' : 'w3-check'}),
 			# 'noted' : forms.CheckboxInput(attrs={'class' : 'w3-check'}),
 			# 'CATmeetingID' : forms.NumberInput(attrs={'class' : 'w3-input w3-border'}),
 		}
+
+
+class CATmeetingAppForm(forms.ModelForm):
+	ASSESSMENT_STATUS = (
+		('R', 'Rejected'),
+		('P', 'Approved'),
+	)
+	assess_status = forms.ChoiceField(choices=ASSESSMENT_STATUS, widget=forms.Select(attrs={'class' : 'w3-select w3-border',}))
+
+	class Meta:
+		model = Application
+		fields = ['name', 'purpose', 'application_type', 'dhbs', 'security_decision', 'privacy_decision', 'clinical_decision', 'CATmeetingCode', 'escalate_to_IPSG', 'noted', 'assess_status']
+		widgets = {			
+			'name': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+			'purpose': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+			'application_type': forms.CheckboxSelectMultiple(attrs={'class': 'w3-ul'}),
+			'dhbs': forms.CheckboxSelectMultiple(attrs={'class': 'w3-ul'}),
+			'security_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'privacy_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'clinical_decision': forms.Select(attrs={'class' : 'w3-select w3-border',}),
+			'CATmeetingCode': forms.TextInput(attrs={'class' : 'w3-input w3-border'}),
+			'escalate_to_IPSG': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+			'noted': forms.CheckboxInput(attrs={'class' : 'w3-check'}),
+		}
+
+
+CATmeetingAppFormset = modelformset_factory(Application, form=CATmeetingAppForm, extra=0)
 
 
 class IPSGMeetingForm(forms.ModelForm):

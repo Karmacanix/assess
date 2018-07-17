@@ -5,6 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.utils.functional import curry
 from django_countries.fields import CountryField
+from random import randint
 from simple_history.models import HistoricalRecords
 
 # Create your models here.
@@ -21,13 +22,16 @@ class ApplicationType(models.Model):
 	def __str__(self):
 		return self.name
 
+def get_code():
+	return 'CAT-'+str(datetime.date.today())+'-ID-'+str(randint(1,500))
 
 class CATmeeting(models.Model):
-	meeting_date = models.DateField(default=datetime.date.today, verbose_name='Date:')
+	meeting_code = models.CharField(default=get_code(), max_length=30, primary_key=True)
+	meeting_date = models.DateField(default=datetime.date.today(), verbose_name='Date:')
 	attendees = models.ManyToManyField(User, related_name='attendees')
 	meeting_location = models.CharField(max_length=200, null=True, blank=True, verbose_name='Location:')
-	meeting_minutes =  models.FileField(null=True, blank=True, verbose_name='Minutes:')
 	comments = models.CharField(max_length=254, null=True, blank=True)
+
 
 
 class IPSGmeeting(models.Model):
@@ -101,7 +105,7 @@ class Application(models.Model):
 		null=True,
 	)
 	clinical_comments = models.CharField(max_length=254, null=True, blank=True)
-	CATmeetingID = models.ForeignKey(CATmeeting, on_delete=models.SET_NULL, null=True, blank=True)
+	CATmeetingCode = models.ForeignKey(CATmeeting, on_delete=models.SET_NULL, null=True, blank=True)
 	escalate_to_IPSG = models.BooleanField(default=False)
 	noted = models.BooleanField(default=False)
 	business_owner_approval = models.BooleanField(default=False)
