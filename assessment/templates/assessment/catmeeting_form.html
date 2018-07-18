@@ -15,7 +15,8 @@
   </header>
   <br>
   <div class="w3-row">
-    <form class="w3-container w3-card-4" action="" method="post"><br>
+    <div class="w3-container w3-card-4">
+    <form action="" method="post"><br>
       {% csrf_token %}
       {% for field in form %}
         <div class="w3-row w3-padding">
@@ -23,55 +24,12 @@
           <div class="w3-col m3 l3">{{ field }}</div>
         </div>
       {% endfor %}
-      
     </form>
   </div>
-  <br>
-  {% if ready_for_cat_list %}
-    <h3>Decisions</h3>
-    <table class="w3-table-all w3-hoverable w3-small w3-card-4">
-      <thead>
-        <tr class="w3-light-grey">
-          <th>{% trans "Name" %}</th>
-          <th>{% trans "Purpose" %}</th>
-          <th>{% trans "Security Risk" %}</th>
-          <th>{% trans "Privacy Risk" %}</th>
-          <th>{% trans "Clinical Risk" %}</th>
-          <th>{% trans "CAT" %}</th>
-          <th>{% trans "Escalate to IPSG" %}</th>
-          <th>{% trans "Noted" %}</th>
-          <th>{% trans "Decision" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <form method="post">
-          {{ formset.management_form }}
-        {% for frm in formset %}
-        <tr>
-          <td>{{ frm.name.value}}</td>
-          <td>{{ frm.purpose.value}}</td>
-          <td class="{% if frm.security_decision.value == 'N' %} w3-green{% elif frm.security_decision.value == 'H' %} w3-red{% elif frm.security_decision.value == 'E' %} w3-purple{% elif frm.security_decision.value == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ frm.instance.get_security_decision_display }}</td>
-          <td class="{% if frm.privacy_decision.value == 'N' %} w3-green{% elif frm.privacy_decision.value == 'H' %} w3-red{% elif frm.privacy_decision.value == 'E' %} w3-purple{% elif frm.privacy_decision.value == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ frm.instance.get_privacy_decision_display }}</td>
-          <td class="{% if frm.clinical_decision.value == 'N' %} w3-green{% elif frm.clinical_decision.value == 'H' %} w3-red{% elif frm.clinical_decision.value == 'E' %} w3-purple{% elif frm.clinical_decision.value == 'L' %} w3-orange{% else %} w3-grey{% endif %} w3-opacity-min">{{ frm.instance.get_clinical_decision_display }}</td>
-          <td>{{ frm.CATmeetingCode.value|default_if_none:form.meeting_code.value }}</td>
-          <td>{{ frm.escalate_to_IPSG }}</td>
-          <td>{{ frm.noted }}</td>
-          <td>{{ frm.assess_status }}</td>
-         </tr>
-        {% endfor %}
-      </form>
-      </tbody>
-    </table>
-  {% else %}
-    <p>No applications are ready for the CAT team!</p>
-  {% endif %}
+  </div>
   <br>
   <div class="w3-row">
-        {% if catmeeting %}
-          <a class="w3-button w3-section w3-red w3-ripple w3-large" href="{% url 'assessment:catmeeting-detail' catmeeting.id %}">{% trans "Cancel" %}</a>
-        {% else %}
           <a class="w3-button w3-section w3-red w3-ripple w3-large" href="{% url 'assessment:catmeeting-list' %}">{% trans "Cancel" %}</a>
-        {% endif %}
         <button class="primaryAction w3-button w3-section w3-green w3-ripple w3-large" type="submit">{% trans "Save" %}</button>
       </div>
 </div>

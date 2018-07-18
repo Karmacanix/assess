@@ -5,7 +5,6 @@ from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.utils.functional import curry
 from django_countries.fields import CountryField
-from random import randint
 from simple_history.models import HistoricalRecords
 
 # Create your models here.
@@ -21,28 +20,6 @@ class ApplicationType(models.Model):
 
 	def __str__(self):
 		return self.name
-
-def get_code():
-	return 'CAT-'+str(datetime.date.today())+'-ID-'+str(randint(1,500))
-
-class CATmeeting(models.Model):
-	meeting_code = models.CharField(default=get_code(), max_length=30, primary_key=True)
-	meeting_date = models.DateField(default=datetime.date.today(), verbose_name='Date:')
-	attendees = models.ManyToManyField(User, related_name='attendees')
-	meeting_location = models.CharField(max_length=200, null=True, blank=True, verbose_name='Location:')
-	comments = models.CharField(max_length=254, null=True, blank=True)
-
-
-
-class IPSGmeeting(models.Model):
-	# meeting_date
-	# attendees
-	# absentees
-	# meeting_location
-	# attach_mins
-	# decision - accept, reject, escalate
-	# list of apps and associated IPSG decision
-	pass
 
 
 class Application(models.Model):
@@ -70,6 +47,7 @@ class Application(models.Model):
 		('A', 'Assessing'),
 		('R', 'Rejected'),
 		('P', 'Approved'),
+		('E', 'Escalated to IPSG'),
 	)
 	assess_status = models.CharField(
 		max_length=1,
@@ -78,8 +56,8 @@ class Application(models.Model):
 		verbose_name="Status"
 	)
 	RISK_RATING = (
-		('N', 'No / Negligible Risk'),
-		('L', 'Low impact Risk'),
+		('N', 'No Risk'),
+		('L', 'Low Impact Risk'),
 		('H', 'High Impact Risk'),
 		('E', 'Extreme Risk'),
 	)
@@ -105,9 +83,7 @@ class Application(models.Model):
 		null=True,
 	)
 	clinical_comments = models.CharField(max_length=254, null=True, blank=True)
-	CATmeetingCode = models.ForeignKey(CATmeeting, on_delete=models.SET_NULL, null=True, blank=True)
-	escalate_to_IPSG = models.BooleanField(default=False)
-	noted = models.BooleanField(default=False)
+	CATmeeting = models.ForeignKey('CATmeeting', on_delete=models.SET_NULL, null=True, blank=True)
 	business_owner_approval = models.BooleanField(default=False)
 	business_owner_date = models.DateField(verbose_name='Submit Date', null=True, blank=True)
 	attachments =  models.FileField(null=True, blank=True)
@@ -361,3 +337,15 @@ class PrivacyAssessment(models.Model):
 			method_v_name = "get_{0}_verbose_name".format(field.name)
 			curried_v_method = curry(self._get_verbose_name, field_name=field.name)
 			setattr(self, method_v_name, curried_v_method)
+
+
+class CATmeeting(models.Model):
+	meeting_date = models.DateField(default=datetime.date.today())
+	attendees = models.ManyToManyField(User, related_name='attendees')
+	apps_approved = models.ManyToManyField(Application, related_name='approved_apps')
+	apps_rejected = models.ManyToManyField(Application, related_name='rejected_apps')
+	apps_escalated = models.ManyToManyField(Application, related_name='escalated_to_IPSG')
+
+
+class IPSGmeeting(models.Model):
+	pass

@@ -23,19 +23,28 @@
   <tr class="w3-light-grey">
     <th>Date</th>
     <th>Attendees</th>
-    <th>Location</th>
-    <th>Apps Noted</th>
+    <th>Apps Approved</th>
+    <th>Apps Rejected</th>
+    <th>Apps Escalated to IPSG</th>
   </tr>
 </thead>
 <tbody>
 {% for meeting in catmeeting_list %}
 <tr>
-  <td><a href="{% url 'assessment:catmeeting-detail' meeting.id %}">{{ meeting.meeting_date }}</a></td>
+  <td><a href="{% url 'assessment:catmeeting-detail' meeting.id %}">{{ meeting.id }}</a></td>
+  <td>{{ meeting.meeting_date }}</td>
   <td>{% for attendees in meeting.attendees.all %}
             {{ attendees }}{% if forloop.last %}.{% else %},{% endif %}
           {% endfor %}</td>
-  <td>{{ meeting.meeting_location }}</td>
-  <td></td>
+  <td>{% for apps_approved in meeting.apps_approved.all %}
+            {{ apps_approved }}{% if forloop.last %}.{% else %},{% endif %}
+          {% endfor %}</td>
+  <td>{% for apps_rejected in meeting.apps_rejected.all %}
+            {{ apps_rejected }}{% if forloop.last %}.{% else %},{% endif %}
+          {% endfor %}</td>
+  <td>{% for apps_escalated in meeting.apps_escalated.all %}
+            {{ apps_escalated }}{% if forloop.last %}.{% else %},{% endif %}
+          {% endfor %}</td>
 </tr>
 {% endfor %}
   </tbody>

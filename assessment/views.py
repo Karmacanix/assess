@@ -12,11 +12,11 @@ from django.urls import reverse_lazy, reverse
 # this app
 from .models import Application, InformationClassification, CloudQuestionnaire
 from .models import ICTRiskAssessment, ICTVendorAssessment, PrivacyAssessment
-from .models import CATmeeting, IPSGmeeting, get_code
+from .models import CATmeeting, IPSGmeeting
 from .forms import ApplicationForm, ApplicationSubmitForm, ApplicationSecurityDecisionForm
 from .forms import ApplicationPrivacyDecisionForm, ApplicationClinicalDecisionForm
 from .forms import InformationClassificationForm, CloudQuestionnaireForm, ICTRiskAssessmentForm 
-from .forms import ICTVendorAssessmentForm, PrivacyAssessmentForm, CATmeetingForm, CATmeetingAppFormset
+from .forms import ICTVendorAssessmentForm, PrivacyAssessmentForm, CATmeetingForm
 
 # Create your views here.
 class ApplicationList(ListView):
@@ -438,16 +438,6 @@ class CatMeetingList(ListView):
     model = CATmeeting
     template_name="assessment/catmeeting_list.html"
 
-    def get_context_data(self, **kwargs):
-        context = super(CatMeetingList, self).get_context_data(**kwargs)
-        context['ready_for_cat_list'] = Application.objects.filter(
-                                    assess_status='A',
-                                    security_decision__isnull=False,
-                                    privacy_decision__isnull=False,
-                                    clinical_decision__isnull=False,
-                                )
-        return context
-
 
 class CatMeetingDetail(DetailView):
     model = CATmeeting
@@ -459,53 +449,12 @@ class CatMeetingCreate(SuccessMessageMixin, CreateView):
     success_message = 'CAT Meeting successfully saved!'
     success_url = reverse_lazy('assessment:catmeeting-list')
 
-    def get_initial(self):
-        initial = super(CatMeetingCreate, self).get_initial()
-        m_code = get_code()
-        print('meeting code:',m_code)
-        initial['meeting_code'] = m_code
-        initial['CATmeetingCode'] = m_code
-        return initial
-
-
-    # def post(self, request, *args, **kwargs):
-    #     if request.method == 'POST':
-    #         form = CATmeetingForm(request.POST)
-    #         if form.is_valid():
-    #             print (form.cleaned_data['next'])
-
-    #             return HttpResponseRedirect('/thanks/')
-        
-    #     else:
-    #         form = CATmeetingForm()
-
-    #         return redirect('assessments:catmeeting-list')
-
-    def get_context_data(self, **kwargs):
-        context = super(CatMeetingCreate, self).get_context_data(**kwargs)
-        a = Application.objects.filter(assess_status='A', security_decision__isnull=False, privacy_decision__isnull=False, clinical_decision__isnull=False,)
-        context['ready_for_cat_list'] = a
-        context['formset'] = CATmeetingAppFormset(queryset=a)
-        context['tabled'] = a.count()
-        print("count:", a.count())
-        return context
-
 
 class CatMeetingUpdate(SuccessMessageMixin, UpdateView):
     model = CATmeeting
     form_class = CATmeetingForm
     success_message = 'CAT Meeting successfully updated!'
-
-    def get_context_data(self, **kwargs):
-        context = super(CatMeetingUpdate, self).get_context_data(**kwargs)
-        a = Application.objects.filter(assess_status='A', security_decision__isnull=False, privacy_decision__isnull=False, clinical_decision__isnull=False,)
-        context['ready_for_cat_list'] = a
-        context['tabled'] = a.count()
-        print("count:", a.count())
-        return context
-
-    def get_success_url(self):
-        return reverse('assessment:catmeeting-detail', kwargs={'pk': self.kwargs['pk']})
+    success_url = reverse_lazy('assessment:catmeeting-list')
 
 
 class CatMeetingDelete(SuccessMessageMixin, DeleteView):
